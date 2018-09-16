@@ -40,10 +40,10 @@ class GIOS_FF():
         self.session = self.service.get_auth_session(data=data, decoder=json.loads)
 
         r = self.session.get(url, params={'format': 'json'})
-        print r.status_code
+        print (r.status_code)
 
     def get_standings(self, sess):
-        new_url = 'https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=nfl.l.159366/scoreboard'
+        new_url = 'https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=nfl.l.159366/standings'
         s = sess.get(new_url, params={'format': 'json'})
         return s
         # print s.status_code
@@ -54,5 +54,5 @@ cred_file = input("Please enter the location of credentials json file: ")
 test = GIOS_FF(cred_file)
 
 response = test.get_standings(test.session)
-print json.dumps(response.json(), indent=4, sort_keys=True)
+print (json.dumps(response.json(), indent=4, sort_keys=True))
 
