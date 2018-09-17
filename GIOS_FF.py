@@ -6,6 +6,7 @@ from pandas.io.json import json_normalize
 from rauth import OAuth2Service
 from rauth.utils import parse_utf8_qsl
 
+
 class GIOS_FF():
     def __init__(self, credentials):
         # load credentials
@@ -20,7 +21,7 @@ class GIOS_FF():
             access_token_url='https://api.login.yahoo.com/oauth2/get_token',
             authorize_url='https://api.login.yahoo.com/oauth2/request_auth',
             base_url='http://fantasysports.yahooapis.com/')
-
+        self.baseURI = "https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=nfl.l.159366"
         # the return URL is used to validate the request
         params = {'redirect_uri': 'oob',
                   'response_type': 'code'}
@@ -43,16 +44,23 @@ class GIOS_FF():
         print (r.status_code)
 
     def get_standings(self, sess):
-        new_url = 'https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=nfl.l.159366/standings'
-        s = sess.get(new_url, params={'format': 'json'})
+        # new_url = 'https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=nfl.l.159366/standings'
+        s = sess.get(self.baseURI + '/standings', params={'format': 'json'})
         return s
         # print s.status_code
         # print s.json()
+
+    def get_score(self,sess):
+        s = sess.get(self.baseURI + '/scoreboard', params={'format': 'json'})
+        return s
 
 
 cred_file = input("Please enter the location of credentials json file: ")
 test = GIOS_FF(cred_file)
 
 response = test.get_standings(test.session)
-print (json.dumps(response.json(), indent=4, sort_keys=True))
+print(json.dumps(response.json(), indent=4, sort_keys=True))
+
+response = test.get_score(test.session)
+print(json.dumps(response.json(), indent=4, sort_keys=True))
 
