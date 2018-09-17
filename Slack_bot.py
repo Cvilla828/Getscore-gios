@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Sep 17 13:23:16 2018
-
-@author: villac
-"""
 
 import os
 import time
