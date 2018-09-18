@@ -51,6 +51,7 @@ class FantasyGios(object):
         return s
 
 
+# Commented out because asking for double file path and running unneeded requests etc that aren't needed when running
 # cred_file = input("Please enter the location of credentials json file: ")
 # test = FantasyGios(cred_file)
 #
