@@ -2,6 +2,7 @@ import json
 import webbrowser
 from rauth import OAuth2Service
 import os
+import time
 
 
 class FantasyGios(object):
@@ -41,10 +42,39 @@ class FantasyGios(object):
             'code': verify,
             'grant_type': 'authorization_code',
             'redirect_uri': 'oob'}
+        
         self.session = self.service.get_auth_session(data=data, decoder=json.loads)
-
+        
+        # Getting the refresh_toekn so when the token expires it renews it self.
+        self.credentials['access_token'] = self.service.access_token_response.json()['access_token']
+        self.credentials['xoauth_yahoo_guid'] = self.service.access_token_response.json()['xoauth_yahoo_guid']
+        self.credentials['refresh_token'] = self.service.access_token_response.json()['refresh_token']
+        self.credentials['expire_at'] = time.time() + 3600
+        
+        
         r = self.session.get(url, params={'format': 'json'})
         print(r.status_code)
+    
+    # checks to see if token is expired
+    def token_is_expired(self):
+        if time.time() == self.credentials['expire_at']:
+            return True
+        else:
+            return False
+    
+    def renew_token(self, sess):
+        data = {
+            'client_id': self.credentials["client_id"],
+            'client_secret': self.credentials["client_secret"],
+            'grant_type': 'refresh_token',
+            'redirect_uri': 'oob',
+            'refresh_token' : self.credentials['refresh_token']}
+        self.session = self.service.get_auth_session(data=data, decoder=json.loads)
+        
+        # Update Credential dict
+        self.credentials['access_token'] = self.service.access_token_response.json()['access_token']
+        self.credentials['expire_at'] = time.time() + 3600
+         
 
     def get_standings(self, sess):
         # new_url = 'https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=nfl.l.159366/standings'

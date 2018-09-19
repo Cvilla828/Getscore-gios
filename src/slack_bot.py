@@ -4,6 +4,7 @@ import time
 import re
 from slackclient import SlackClient
 from fantasy_gios import FantasyGios
+from yahoo_parser import *
 import json
 
 # instantiate Slack client
@@ -15,7 +16,9 @@ starterbot_id = None
 RTM_READ_DELAY = 1 # 1 second delay between reading from RTM
 EXAMPLE_COMMAND = "getscore"
 MENTION_REGEX = "^<@(|[WU].+?)>(.*)"
-YFS = FantasyGios("yahoo_creds.json")
+cred_file = '..\credentials.json'
+
+YFS = FantasyGios(cred_file)
 
 
 def parse_bot_commands(slack_events):
@@ -47,14 +50,23 @@ def handle_command(command, channel):
         Executes bot command if the command is known
     """
     # Default response is help text for the user
-    default_response = "Not sure what you mean. Try *{}*.".format(EXAMPLE_COMMAND)
+    default_response = "Not sure what you mean. Try *{}*.".format(EXAMPLE_COMMAND + "or getpredictions")
 
     # Finds and executes the given command, filling in response
     response = None
+    message =''
     # This is where you start to implement more commands!
     if command.startswith(EXAMPLE_COMMAND):
-        response =  YFS.get_score(YFS.session).json() 
-
+        response =  parse_scores(YFS.get_score(YFS.session).json())
+        for i in range(0,5):
+            text = "%s - %s vs %s - %s\n" %(response[i]["name_team_1"],response[i]["score_team_1"], response[i]["score_team_2"], response[i]["name_team_2"])
+            message = message + text
+    if command.startswith("getpredictions"):
+        response =  parse_scores(YFS.get_score(YFS.session).json())
+        for i in range(0,5):
+            text = "%s - %s vs %s - %s\n" %(response[i]["name_team_1"],response[i]["pred_team_1"], response[i]["pred_team_2"], response[i]["name_team_2"])
+            message = message + text
+    response = "```" + message + "```"
     # Sends the response back to the channel
     slack_client.api_call(
         "chat.postMessage",
@@ -69,9 +81,13 @@ if __name__ == "__main__":
         # Read bot's user ID by calling Web API method `auth.test`
         starterbot_id = slack_client.api_call("auth.test")["user_id"]
         while True:
+            if YFS.token_is_expired():
+                YFS.renew_token(YFS.session)
             command, channel = parse_bot_commands(slack_client.rtm_read())
             if command:
                 handle_command(command, channel)
             time.sleep(RTM_READ_DELAY)
+            # Renewing Token
+            
     else:
         print("Connection failed. Exception traceback printed above.")
