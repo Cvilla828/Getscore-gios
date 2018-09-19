@@ -50,7 +50,7 @@ def handle_command(command, channel):
         Executes bot command if the command is known
     """
     # Default response is help text for the user
-    default_response = "Not sure what you mean. Try *{}*.".format(EXAMPLE_COMMAND + "or getpredictions")
+    default_response = "Not sure what you mean. Try *{}*.".format(EXAMPLE_COMMAND + " or getpredictions")
 
     # Finds and executes the given command, filling in response
     response = None
@@ -58,15 +58,16 @@ def handle_command(command, channel):
     # This is where you start to implement more commands!
     if command.startswith(EXAMPLE_COMMAND):
         response =  parse_scores(YFS.get_score(YFS.session).json())
-        for i in range(0,5):
-            text = "%s - %s vs %s - %s\n" %(response[i]["name_team_1"],response[i]["score_team_1"], response[i]["score_team_2"], response[i]["name_team_2"])
+        for i in response:
+            text = "%s - %s vs %s - %s\n" %(i["name_team_1"],i["score_team_1"], i["score_team_2"], i["name_team_2"])
             message = message + text
     if command.startswith("getpredictions"):
         response =  parse_scores(YFS.get_score(YFS.session).json())
-        for i in range(0,5):
-            text = "%s - %s vs %s - %s\n" %(response[i]["name_team_1"],response[i]["pred_team_1"], response[i]["pred_team_2"], response[i]["name_team_2"])
+        for i in response:
+            text = "%s - %s vs %s - %s\n" %(i["name_team_1"],i["pred_team_1"], i["pred_team_2"], i["name_team_2"])
             message = message + text
-    response = "```" + message + "```"
+    if message is not '':
+        response = "```" + message + "```"
     # Sends the response back to the channel
     slack_client.api_call(
         "chat.postMessage",

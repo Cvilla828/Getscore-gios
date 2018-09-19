@@ -69,7 +69,7 @@ class FantasyGios(object):
             'grant_type': 'refresh_token',
             'redirect_uri': 'oob',
             'refresh_token' : self.credentials['refresh_token']}
-        self.session = self.service.get_auth_session(data=data, decoder=json.loads)
+        self.session = self.service.get_access_token(data=data, decoder=json.loads)
         
         # Update Credential dict
         self.credentials['access_token'] = self.service.access_token_response.json()['access_token']
