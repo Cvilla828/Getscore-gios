@@ -1,11 +1,18 @@
 import json
 import webbrowser
 from rauth import OAuth2Service
+import os
 
 
 class FantasyGios(object):
     def __init__(self, credentials):
         # load credentials
+        file_path = os.path.join(os.getcwd(), credentials)
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(
+                "credentials file does not exist at: {}".format(file_path)
+            )
+
         self.credentials_file = open(credentials)
         self.credentials = json.load(self.credentials_file)
         self.credentials_file.close()
@@ -46,18 +53,6 @@ class FantasyGios(object):
         # print s.status_code
         # print s.json()
 
-    def get_score(self,sess):
+    def get_score(self, sess):
         s = sess.get(self.baseURI + '/scoreboard', params={'format': 'json'})
         return s
-
-
-# Commented out because asking for double file path and running unneeded requests etc that aren't needed when running
-# cred_file = input("Please enter the location of credentials json file: ")
-# test = FantasyGios(cred_file)
-#
-# response = test.get_standings(test.session)
-# print(json.dumps(response.json(), indent=4, sort_keys=True))
-#
-# response = test.get_score(test.session)
-# print(json.dumps(response.json(), indent=4, sort_keys=True))
-
