@@ -2,7 +2,7 @@ from fantasy_gios import FantasyGios
 from yahoo_parser import *
 import json
 
-cred_file = '../credentials.json'
+cred_file = 'credentials.json'
 
 test = FantasyGios(cred_file)
 
