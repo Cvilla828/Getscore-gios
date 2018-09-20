@@ -86,3 +86,12 @@ class FantasyGios(object):
     def get_score(self, sess):
         s = sess.get(self.baseURI + '/scoreboard', params={'format': 'json'})
         return s
+    
+    def get_teams(self, sess):
+        # new_url = 'https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=nfl.l.159366/standings'
+        s = sess.get(self.baseURI + '/players', params={'format': 'json'})
+        return s
+    
+gios = FantasyGios("../credentials.json")
+response =gios.get_teams(gios.session)
+print(json.dumps(response.json(), indent=4, sort_keys=True))
