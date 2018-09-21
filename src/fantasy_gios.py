@@ -50,8 +50,7 @@ class FantasyGios(object):
         self.credentials['xoauth_yahoo_guid'] = self.service.access_token_response.json()['xoauth_yahoo_guid']
         self.credentials['refresh_token'] = self.service.access_token_response.json()['refresh_token']
         self.credentials['expire_at'] = time.time() + 3600
-        
-        
+
         r = self.session.get(url, params={'format': 'json'})
         print(r.status_code)
     

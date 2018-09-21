@@ -1,13 +1,14 @@
 from fantasy_gios import FantasyGios
 from yahoo_parser import *
+from utility import format_scores
 import json
 
-cred_file = '..\credentials.json'
+cred_file = '../credentials.json'
 
 test = FantasyGios(cred_file)
 
 response = test.get_standings(test.session)
-#print(json.dumps(response.json(), indent=4, sort_keys=True))
+# print(json.dumps(response.json(), indent=4, sort_keys=True))
 
 # response.json()['fantasy_content']['leagues']['0']['league'][1]['scoreboard']['0']['matchups']['0']['matchup']['0']['teams']['0']['team'][0][2]['name']
 # response.json()['fantasy_content']['leagues']['0']['league'][1]['scoreboard']['0']['matchups']['0']['matchup']['0']['teams']['0']['team'][1]['team_points']['total']
@@ -16,6 +17,7 @@ response = test.get_standings(test.session)
 
 response = test.get_score(test.session)
 test = parse_scores(response.json())
-
+print(format_scores(test, 'pred'))
+print(format_scores(test, 'score'))
 import pdb; pdb.set_trace()
 print(json.dumps(response.json(), indent=4, sort_keys=True))

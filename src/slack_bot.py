@@ -5,6 +5,7 @@ import re
 from slackclient import SlackClient
 from fantasy_gios import FantasyGios
 from yahoo_parser import *
+from utility import format_scores
 import json
 
 # instantiate Slack client
@@ -54,18 +55,14 @@ def handle_command(command, channel):
 
     # Finds and executes the given command, filling in response
     response = None
-    message =''
+    message = ''
     # This is where you start to implement more commands!
     if command.startswith(EXAMPLE_COMMAND):
-        response =  parse_scores(YFS.get_score(YFS.session).json())
-        for i in response:
-            text = "%s - %s vs %s - %s\n" %(i["name_team_1"],i["score_team_1"], i["score_team_2"], i["name_team_2"])
-            message = message + text
+        response = parse_scores(YFS.get_score(YFS.session).json())
+        message = format_scores(response, 'score')
     if command.startswith("getpredictions"):
-        response =  parse_scores(YFS.get_score(YFS.session).json())
-        for i in response:
-            text = "%s - %s vs %s - %s\n" %(i["name_team_1"],i["pred_team_1"], i["pred_team_2"], i["name_team_2"])
-            message = message + text
+        response = parse_scores(YFS.get_score(YFS.session).json())
+        message = format_scores(response, 'pred')
     if message is not '':
         response = "```" + message + "```"
     # Sends the response back to the channel
