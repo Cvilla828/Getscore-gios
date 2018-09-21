@@ -20,7 +20,7 @@ MENTION_REGEX = "^<@(|[WU].+?)>(.*)"
 cred_file = '..\credentials.json'
 
 YFS = FantasyGios(cred_file)
-
+YFS.get_team_id()
 
 def parse_bot_commands(slack_events):
     """

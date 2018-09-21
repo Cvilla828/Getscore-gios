@@ -52,6 +52,8 @@ class FantasyGios(object):
         self.credentials['expire_at'] = time.time() + 3600
 
         r = self.session.get(url, params={'format': 'json'})
+        #dict for teams
+        self.team_id ={}
         print(r.status_code)
     
     # checks to see if token is expired
@@ -90,7 +92,21 @@ class FantasyGios(object):
         # new_url = 'https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=nfl.l.159366/standings'
         s = sess.get(self.baseURI + '/players', params={'format': 'json'})
         return s
+    #gets team and team id
+    def get_team_id(self, sess):
+        s = sess.get(self.baseURI + '/teams', params={'format': 'json'})
+        temp = s.json()
+        size = s.json()['fantasy_content']['leagues']['0']['league'][1]['teams']['count']
+        for i in range(0,size):
+            self.team_id[temp['fantasy_content']['leagues']['0']['league'][1]['teams'][str(i)]['team'][0][2]['name']] = temp['fantasy_content']['leagues']['0']['league'][1]['teams'][str(i)]['team'][0][0]['team_key']
+        #print(self.team_id)
+        
+    def get_team_roster(self, sess, name):
+        s = sess.get('https://fantasysports.yahooapis.com/fantasy/v2/'+ 'teams;team_keys='+ self.team_id[name]  + '/players', params={'format': 'json'})
+        return s
     
 gios = FantasyGios("../credentials.json")
-response =gios.get_teams(gios.session)
+gios.get_team_id(gios.session)
+response =gios.get_team_roster(gios.session, "Null Packets")
+
 print(json.dumps(response.json(), indent=4, sort_keys=True))
