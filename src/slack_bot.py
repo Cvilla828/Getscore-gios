@@ -58,10 +58,10 @@ def handle_command(command, channel):
     message = ''
     # This is where you start to implement more commands!
     if command.startswith(EXAMPLE_COMMAND):
-        response = parse_scores(YFS.get_score(YFS.session).json())
+        response = parse_scores(YFS.get_score().json())
         message = format_scores(response, 'score')
     if command.startswith("getpredictions"):
-        response = parse_scores(YFS.get_score(YFS.session).json())
+        response = parse_scores(YFS.get_score().json())
         message = format_scores(response, 'pred')
     if message is not '':
         response = "```" + message + "```"
@@ -80,7 +80,7 @@ if __name__ == "__main__":
         starterbot_id = slack_client.api_call("auth.test")["user_id"]
         while True:
             if YFS.token_is_expired():
-                YFS.renew_token(YFS.session)
+                YFS.renew_token()
             command, channel = parse_bot_commands(slack_client.rtm_read())
             if command:
                 handle_command(command, channel)
