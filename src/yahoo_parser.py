@@ -1,6 +1,7 @@
 
 # Number of matches per week
 MATCHES = 5
+ROSTER = 15
 
 
 def parse_scores(scores_json):
@@ -18,3 +19,17 @@ def parse_scores(scores_json):
         } for i in range(0, MATCHES)
     ]
     return matches
+
+
+def parse_roster(roster_json):
+    base_json = roster_json['fantasy_content']['teams']['0']['team'][1]['players']
+    roster = [
+        {
+            'name_full': base_json[str(i)]['player'][0][2]['name']['full'],
+            #'position': base_json[str(i)]['player'][0][9],
+
+        } for i in range(0, ROSTER)
+    ]
+    return roster
+
+

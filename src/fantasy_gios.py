@@ -104,9 +104,4 @@ class FantasyGios(object):
     def get_team_roster(self, sess, name):
         s = sess.get('https://fantasysports.yahooapis.com/fantasy/v2/'+ 'teams;team_keys='+ self.team_id[name]  + '/players', params={'format': 'json'})
         return s
-    
-gios = FantasyGios("../credentials.json")
-gios.get_team_id(gios.session)
-response =gios.get_team_roster(gios.session, "Null Packets")
 
-print(json.dumps(response.json(), indent=4, sort_keys=True))
