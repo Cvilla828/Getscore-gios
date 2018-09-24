@@ -56,22 +56,28 @@ def handle_command(command, channel):
     # Finds and executes the given command, filling in response
     response = None
     message = ''
+    attachment = None
     # This is where you start to implement more commands!
     if command.startswith(EXAMPLE_COMMAND):
         response = parse_scores(YFS.get_score().json())
-        message = format_scores(response, 'score')
+        attachment = format_scores(response, 'score')
     if command.startswith("getpredictions"):
         response = parse_scores(YFS.get_score().json())
-        message = format_scores(response, 'pred')
-    if message is not '':
-        response = "```" + message + "```"
-    # Sends the response back to the channel
-    slack_client.api_call(
-        "chat.postMessage",
-        channel=channel,
-        text=response or default_response
-    )
-
+        attachment = format_scores(response, 'pred')
+    if not attachment:
+        # Sends the response back to the channel
+        slack_client.api_call(
+            "chat.postMessage",
+            channel=channel,
+            text=default_response
+        )
+    else:
+        slack_client.api_call(
+            "chat.postMessage",
+            channel = channel,
+            attachments=json.dumps(attachment)
+        )
+    
 
 if __name__ == "__main__":
     if slack_client.rtm_connect(with_team_state=False):
