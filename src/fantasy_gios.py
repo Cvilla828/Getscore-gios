@@ -60,10 +60,8 @@ class FantasyGios(object):
     # checks to see if token is expired
     def token_is_expired(self):
         if time.time() >= (self.credentials['expire_at'] - 1):
-            print("true")
             return True
         else:
-            print("false")
             return False
     
     def renew_token(self):
@@ -78,8 +76,8 @@ class FantasyGios(object):
         # Update Credential dict
         self.credentials['access_token'] = self.service.access_token_response.json()['access_token']
         self.credentials['expire_at'] = time.time() + 3600
-        self.session = self.service.get_session(self.credentials['access_token'])
-        print (self.credentials['access_token'])
+        self.session = self.service.get_auth_session(data=data, decoder=json.loads)
+        
         
 
     def get_standings(self):
@@ -110,4 +108,3 @@ class FantasyGios(object):
     def get_team_roster(self, name):
         s = self.session.get('https://fantasysports.yahooapis.com/fantasy/v2/' + 'teams;team_keys='+ self.team_id[name]  + '/players', params={'format': 'json'})
         return s
-
