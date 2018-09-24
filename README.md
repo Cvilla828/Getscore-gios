@@ -25,5 +25,6 @@ Slack Bot for Yahoo Fantasy Football; Team GIOS FF
 ## The Dream Team
   - Carlos 
   - Hope
-  - Schuyler 
+  - Schuyler
+  - David
   - Tho (kinda)
