@@ -65,7 +65,6 @@ def handle_command(command, channel):
         response = parse_scores(YFS.get_score().json())
         attachment = format_scores(response, 'pred')
     if not attachment:
-        response = "```" + message + "```"
         # Sends the response back to the channel
         slack_client.api_call(
             "chat.postMessage",
