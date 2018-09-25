@@ -2,4 +2,4 @@
 /venv
 credentials.json
 __pycache__/
-src\test.json
+src/test.json
