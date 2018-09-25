@@ -4,7 +4,7 @@ import urllib
 class nfl_gameData(object):
     def __init__(self):
         self.week_info = {}
-        self.week_info = get_game_week_info()
+        self.week_info = self.get_game_week_info()
         
     def get_game_week_info(self):
         url = "http://www.nfl.com/liveupdate/scorestrip/ss.json"
@@ -18,8 +18,28 @@ class nfl_gameData(object):
         game_play_info = json.load(info)[eid]["drives"]
         return game_play_info
     #print(json.dumps(game_play_info, indent=4, sort_keys=True))
-
-
+    def get_live_plays(self):
+        eid = None
+        plays = []
+        current_play = None
+        for game in self.week_info:
+            eid = game['eid']
+            game_info = self.get_game_info(str(eid))
+            for i in game_info:
+                if i == "crntdrv":
+                    break
+                current_play = [
+                        {
+                                'quarter': game_info[i]['plays'][str(j)]['qtr'],
+                                'desc': game_info[i]['plays'][str(j)]['desc'],
+                                'drive': str(i),
+                                'play_num': str(j),
+                                'printed':'no'
+                        }for j in game_info[i]["plays"]
+                        ]
+            plays.insert(eid, current_play)
+            #plays[eid] = current_play
+        return (plays)
 
     def get_past_plays(self, team_name):
         eid = None
@@ -29,7 +49,7 @@ class nfl_gameData(object):
                 
         if eid == None:
             return (-1)
-        game_info = get_game_info(str(eid))
+        game_info = self.get_game_info(str(eid))
         p=0
         past_plays= {}
         for i in game_info:
@@ -51,3 +71,6 @@ week = game_info.week_info
 past_plays = game_info.get_past_plays("falcons")
 if past_plays != -1:
    print(past_plays)
+
+plays = game_info.get_live_plays()
+print(plays)
