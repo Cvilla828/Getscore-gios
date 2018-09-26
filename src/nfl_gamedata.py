@@ -5,12 +5,29 @@ class nfl_gameData(object):
     def __init__(self):
         self.week_info = {}
         self.week_info = self.get_game_week_info()
+        self.scores = self.get_game_score()
         
     def get_game_week_info(self):
         url = "http://www.nfl.com/liveupdate/scorestrip/ss.json"
         info = urllib.request.urlopen(url)
         infos = json.load(info)["gms"]
         return(infos)
+        
+    def get_game_score(self):
+        week_scores = []
+        url = "http://www.nfl.com/liveupdate/scorestrip/ss.json"
+        info = urllib.request.urlopen(url)
+        scores = json.load(info)["gms"]
+        week_scores = [
+                {
+                        'home_t':score['hnn'],
+                        'away_t':score['vnn'],
+                        'home_s':score['hs'],
+                        'away_s': score['vs']
+                        }for score in scores
+                    ] 
+        return(week_scores)
+    
 
     def get_game_info(self, eid):
         url = "http://www.nfl.com/liveupdate/game-center/%s/%s_gtd.json" % (eid, eid)
@@ -65,12 +82,16 @@ class nfl_gameData(object):
 
     
 
-game_info= nfl_gameData()
-week = game_info.week_info
+#game_info= nfl_gameData()
+#week = game_info.week_info
+#try: info = urllib.request.urlopen("http://www.nfl.com/liveupdate/game-center/2018092700/2018092700_gtd.json")
+#except urllib.error.HTTPError as e:
+#    print(e.reason)
+#past_plays = game_info.get_past_plays("falcons")
+#if past_plays != -1:
+#   print(past_plays)
 
-past_plays = game_info.get_past_plays("falcons")
-if past_plays != -1:
-   print(past_plays)
+#plays = game_info.get_live_plays()
+#print(plays)
 
-plays = game_info.get_live_plays()
-print(plays)
+#print(game_info.scores)

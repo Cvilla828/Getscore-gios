@@ -157,3 +157,23 @@ class ScoresPost(SlackPost):
             value = "{} _({}%)_".format(score["{}_team_2".format(score_type)], int(100*score["chance_team_2"]))
             att.add_field(title, value, True)
         self.add_attachment(att)
+
+class NFLScoresPost(SlackPost):
+    def __init__(self, nfl_scores=None):
+        super(NFLScoresPost, self).__init__()
+        if nfl_scores is not None:
+            self.set_nfl_scores(nfl_scores)
+            
+    def set_nfl_scores(self, nfl_scores):
+        title = "Current NFL Scores :nfl:"
+        att = SlackPostAttachment()
+        att.set_title(title, "https://sports.yahoo.com/nfl/scoreboard/")
+        for score in nfl_scores:
+            title = score['home_t'] + " :" + score['home_t'].lower() +":"
+            value = score['home_s']
+            att.add_field(title, value, True)
+            title = score['away_t'] + " :" + score['away_t'].lower() +":"
+            value = score['away_s']
+            att.add_field(title, value, True)
+        self.add_attachment(att)
+            
