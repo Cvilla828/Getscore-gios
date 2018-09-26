@@ -5,8 +5,9 @@ import re
 from slackclient import SlackClient
 from fantasy_gios import FantasyGios
 from yahoo_parser import *
-from utility import format_scores
+from slack_post import *
 import json
+from nfl_gamedata import *
 
 # instantiate Slack client
 slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
@@ -21,6 +22,7 @@ cred_file = '..\credentials.json'
 
 YFS = FantasyGios(cred_file)
 YFS.get_team_id()
+nfl = nfl_gameData()
 
 def parse_bot_commands(slack_events):
     """
@@ -50,32 +52,27 @@ def handle_command(command, channel):
     """
         Executes bot command if the command is known
     """
-    # Default response is help text for the user
-    default_response = "Not sure what you mean. Try *{}*.".format(EXAMPLE_COMMAND + " or getpredictions")
 
-    # Finds and executes the given command, filling in response
-    response = None
-    message = ''
-    attachment = None
-    # This is where you start to implement more commands!
-    if command.startswith(EXAMPLE_COMMAND):
-        response = parse_scores(YFS.get_score().json())
-        attachment = format_scores(response, 'score')
-    if command.startswith("getpredictions"):
-        response = parse_scores(YFS.get_score().json())
-        attachment = format_scores(response, 'pred')
-    if not attachment:
+    commands = {
+        'getscore': (ScoresPost(parse_scores(YFS.get_score().json()), 'score')),
+        'getpredictions': (ScoresPost(parse_scores(YFS.get_score().json()), 'pred')),
+        'getstandings': (StandingsPost(parse_standings(YFS.get_standings().json()))),
+        'getnflscores' : (NFLScoresPost(nfl.get_game_score()))
+    }
+
+    post = commands.get(command, None)
+    
+    # Default response is help text for the user
+    default_response = "Not sure what you mean. Try one of these: *{}*.".format(", ".join(commands.keys()))
+
+    if isinstance(post, SlackPost):
+        post.send(slack_client, channel)
+    else:
         # Sends the response back to the channel
         slack_client.api_call(
             "chat.postMessage",
             channel=channel,
             text=default_response
-        )
-    else:
-        slack_client.api_call(
-            "chat.postMessage",
-            channel = channel,
-            attachments=json.dumps(attachment)
         )
     
 

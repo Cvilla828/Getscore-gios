@@ -32,4 +32,19 @@ def parse_roster(roster_json):
     ]
     return roster
 
-
+def parse_standings(standings_json):
+    base_json = standings_json['fantasy_content']['leagues']['0']['league'][1]['standings'][0]['teams']
+    count = int(base_json['count'])
+    stands = [
+        {
+            'name': base_json[str(i)]['team'][0][2]['name'],
+            'wins': int(base_json[str(i)]['team'][2]['team_standings']['outcome_totals']['wins']),
+            'losses': int(base_json[str(i)]['team'][2]['team_standings']['outcome_totals']['losses']),
+            'ties': int(base_json[str(i)]['team'][2]['team_standings']['outcome_totals']['ties']),
+            'points_for': float(base_json[str(i)]['team'][2]['team_standings']['points_for']),
+            'points_against': float(base_json[str(i)]['team'][2]['team_standings']['points_against']),
+            'rank': int(base_json[str(i)]['team'][2]['team_standings']['rank']),
+            'streak': base_json[str(i)]['team'][2]['team_standings']['streak']
+        } for i in range(0, count)
+    ]
+    return stands
