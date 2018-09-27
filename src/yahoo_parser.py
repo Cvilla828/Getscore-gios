@@ -26,11 +26,15 @@ def parse_roster(roster_json):
     roster = [
         {
             'name_full': base_json[str(i)]['player'][0][2]['name']['full'],
-            #'position': base_json[str(i)]['player'][0][9],
-
+            'position': base_json[str(i)]['player'][0][-3]['eligible_positions'][0]['position'],
+            'team': base_json[str(i)]['player'][0][5].get(
+                'editorial_team_full_name', base_json[str(i)]['player'][0][7].get(
+                    'editorial_team_full_name', base_json[str(i)]['player'][0][6].get('editorial_team_full_name', ''))),
+            'status': base_json[str(i)]['player'][0][3].get('status', '')
         } for i in range(0, ROSTER)
     ]
     return roster
+
 
 def parse_standings(standings_json):
     base_json = standings_json['fantasy_content']['leagues']['0']['league'][1]['standings'][0]['teams']

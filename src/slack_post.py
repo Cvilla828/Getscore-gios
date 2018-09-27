@@ -21,11 +21,12 @@ class SlackPost(object):
             raise AttributeError
         slack_client.api_call(
             "chat.postMessage",
-            channel = channel,
-            text = self.text,
+            channel=channel,
+            text=self.text,
             attachments=json.dumps([a.to_dict() for a in self.attachments]),
         )
-    
+
+
 class SlackPostAttachment(object):
 
     def __init__(self, title=""):
@@ -139,6 +140,24 @@ class StandingsPost(SlackPost):
             att.add_field(pts_wlt, "", True)
         self.add_attachment(att)
 
+
+class RosterPost(SlackPost):
+    def __init__(self, parsed_roster=None, team_name=None):
+        super(RosterPost, self).__init__()
+        if parsed_roster is not None and team_name is not None:
+            self.set_roster(parsed_roster, team_name)
+
+    def set_roster(self, parsed_roster, team_name):
+        att = SlackPostAttachment()
+        att.set_title("GIOS FF - %s's Roster" % team_name, "https://football.fantasysports.yahoo.com/f1/159366")
+        for player in parsed_roster:
+            name = ":%s: %s" % (player['team'].split()[-1], player['name_full'])
+            att.add_field(name, "", True)
+            att.add_field(player['position'], "", True)
+            att.add_field(player['status'], "", True)
+        self.add_attachment(att)
+
+
 class ScoresPost(SlackPost):
     def __init__(self, parsed_scores=None, score_type=None):
         super(ScoresPost, self).__init__()
@@ -158,6 +177,7 @@ class ScoresPost(SlackPost):
             att.add_field(title, value, True)
         self.add_attachment(att)
 
+
 class NFLScoresPost(SlackPost):
     def __init__(self, nfl_scores=None):
         super(NFLScoresPost, self).__init__()
@@ -176,4 +196,3 @@ class NFLScoresPost(SlackPost):
             value = score['away_s']
             att.add_field(title, value, True)
         self.add_attachment(att)
-            
