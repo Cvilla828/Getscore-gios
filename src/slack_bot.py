@@ -52,16 +52,29 @@ def handle_command(command, channel):
     """
         Executes bot command if the command is known
     """
-
+    parameter = None 
+    team = None
+    if command.find(' ') != -1:
+        parameter = command.split(' ', 1)[1]
+        command = command.split(' ', 1)[0]
+    
+    if parameter not in YFS.team_id.keys():
+        team = parameter
+        parameter = None
+        
     commands = {
         'getscore': (ScoresPost(parse_scores(YFS.get_score().json()), 'score')),
         'getpredictions': (ScoresPost(parse_scores(YFS.get_score().json()), 'pred')),
         'getstandings': (StandingsPost(parse_standings(YFS.get_standings().json()))),
-        'getnflscores': (NFLScoresPost(nfl.get_game_score()))
+        'getnflscores': (NFLScoresPost(nfl.get_game_score_by_team(team), 'team') if team != None else NFLScoresPost(nfl.get_game_score(), 'league')),
+        'getroster': (RosterPost(parse_roster(YFS.get_team_roster(parameter).json()), parameter) if parameter != None else '')
     }
-
-    post = commands.get(command, None)
     
+    
+   
+        
+    post = commands.get(command, None)
+   
     # Default response is help text for the user
     default_response = "Not sure what you mean. Try one of these: *{}*.".format(", ".join(commands.keys()))
 

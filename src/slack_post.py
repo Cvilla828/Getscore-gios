@@ -150,12 +150,20 @@ class RosterPost(SlackPost):
     def set_roster(self, parsed_roster, team_name):
         att = SlackPostAttachment()
         att.set_title("GIOS FF - %s's Roster" % team_name, "https://football.fantasysports.yahoo.com/f1/159366")
-        for player in parsed_roster:
-            name = ":%s: %s" % (player['team'].split()[-1], player['name_full'])
-            att.add_field(name, "", True)
-            att.add_field(player['position'], "", True)
-            att.add_field(player['status'], "", True)
         self.add_attachment(att)
+        for player in parsed_roster:
+            att = SlackPostAttachment()
+            name = "%s - %s :%s:" % (player['position'], player['name_full'], player['team'].split()[-1])
+            att.add_field(name, "", True)
+            #att.add_field(player['position'], "", True)
+            att.add_field(player['status'], '', True)
+            if(player['status'] == 'IR' or player['status'] == 'O' or player['status']=='SUSP'):
+                att.set_color('danger')
+            elif(player['status'] == 'Q'):
+                att.set_color('warning')
+            else:
+                att.set_color('good')
+            self.add_attachment(att)
 
 
 class ScoresPost(SlackPost):
@@ -179,20 +187,65 @@ class ScoresPost(SlackPost):
 
 
 class NFLScoresPost(SlackPost):
-    def __init__(self, nfl_scores=None):
+    def __init__(self, nfl_scores=None, score_type=None):
         super(NFLScoresPost, self).__init__()
-        if nfl_scores is not None:
+        if nfl_scores is not None and score_type == 'league':
             self.set_nfl_scores(nfl_scores)
+        if nfl_scores is not None and score_type == 'team':
+            self.set_nfl_scores_by_name(nfl_scores)
             
     def set_nfl_scores(self, nfl_scores):
         title = "Current NFL Scores :nfl:"
         att = SlackPostAttachment()
         att.set_title(title, "https://sports.yahoo.com/nfl/scoreboard/")
-        for score in nfl_scores:
-            title = score['home_t'] + " :" + score['home_t'].lower() +":"
-            value = score['home_s']
-            att.add_field(title, value, True)
-            title = score['away_t'] + " :" + score['away_t'].lower() +":"
-            value = score['away_s']
-            att.add_field(title, value, True)
         self.add_attachment(att)
+        for score in nfl_scores:
+            att = SlackPostAttachment()
+            if score['quarter'] == 'P':
+                value = score['day']
+                att.add_field('', value, True)
+                value = score['home_t'] + " :" + score['home_t'].lower() +":"
+                att.add_field('', value, True)
+                value = score['time']
+                att.add_field('', value, True)
+                value = score['away_t'] + " :" + score['away_t'].lower() +":"
+                att.add_field('', value, True)
+            else:
+                value = score['quarter']
+                att.add_field('','QTR: '+ value, True)
+                value = score['home_t'] + " :" + score['home_t'].lower() +":" + " " + score['home_s']
+                att.add_field('', value , True)
+                value = score['time']
+                att.add_field('', value, True)
+                value = score['away_t'] + " :" + score['away_t'].lower() +":"+ " " + score['away_s']
+                att.add_field('', value, True)
+            
+            self.add_attachment(att)
+            
+    def set_nfl_scores_by_name(self, team_score):
+        title = "Current NFL Scores :nfl:"
+        att = SlackPostAttachment()
+        att.set_title(title, "https://sports.yahoo.com/nfl/scoreboard/")
+        self.add_attachment(att)
+        for score in team_score:
+            att = SlackPostAttachment()
+            if score['quarter'] == 'P':
+                value = score['day']
+                att.add_field('', value, True)
+                value = score['home_t'] + " :" + score['home_t'].lower() +":"
+                att.add_field('', value, True)
+                value = score['time']
+                att.add_field('', value, True)
+                value = score['away_t'] + " :" + score['away_t'].lower() +":"
+                att.add_field('', value, True)
+            else:
+                value = score['quarter']
+                att.add_field('','QTR: '+ value, True)
+                value = score['home_t'] + " :" + score['home_t'].lower() +":" + " " + score['home_s']
+                att.add_field('', value , True)
+                value = score['time']
+                att.add_field('', value, True)
+                value = score['away_t'] + " :" + score['away_t'].lower() +":"+ " " + score['away_s']
+                att.add_field('', value, True)
+            
+            self.add_attachment(att)

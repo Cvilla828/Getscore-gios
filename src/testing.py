@@ -23,6 +23,6 @@ ff = FantasyGios(cred_file)
 response_roster = ff.get_team_roster('Null Packets')
 
 ff.renew_token()
-temp = parse_roster(response_roster.json())
+temp =response_roster.json()
 print(json.dumps(response_roster.json(), indent=4, sort_keys=True))
 import pdb; pdb.set_trace()

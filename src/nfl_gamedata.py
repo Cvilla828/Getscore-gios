@@ -25,10 +25,36 @@ class nfl_gameData(object):
                         'home_t':score['hnn'],
                         'away_t':score['vnn'],
                         'home_s':score['hs'],
-                        'away_s': score['vs']
+                        'away_s': score['vs'],
+                        'quarter':score['q'],
+                        'time':score['t'],
+                        'day':score['d'],
+                        'redzone': score['rz'],
+                        'poss':(score['p'] if 'p' in score.keys() else '')
                         }for score in scores
                     ] 
         return week_scores
+    
+    def get_game_score_by_team(self, team_name):
+        url = "http://www.nfl.com/liveupdate/scorestrip/ss.json"
+        info = urllib.request.urlopen(url)
+        scores = json.load(info)["gms"]
+        for score in scores:
+            if team_name.lower() == score['vnn'].lower() or team_name.lower() == score['hnn'].lower():
+                team_score =[
+                    {
+                        'home_t':score['hnn'],
+                        'away_t':score['vnn'],
+                        'home_s':score['hs'],
+                        'away_s': score['vs'],
+                        'quarter':score['q'],
+                        'time':score['t'],
+                        'day':score['d'],
+                        'redzone': score['rz'],
+                        'poss':(score['p'] if 'p' in score.keys() else '')
+                        }
+                     ]
+        return team_score
 
     @staticmethod
     def get_game_info(eid):

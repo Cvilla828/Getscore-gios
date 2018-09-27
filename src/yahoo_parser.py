@@ -33,6 +33,7 @@ def parse_roster(roster_json):
             'status': base_json[str(i)]['player'][0][3].get('status', '')
         } for i in range(0, ROSTER)
     ]
+   
     return roster
 
 
