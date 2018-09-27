@@ -57,7 +57,7 @@ def handle_command(command, channel):
         'getscore': (ScoresPost(parse_scores(YFS.get_score().json()), 'score')),
         'getpredictions': (ScoresPost(parse_scores(YFS.get_score().json()), 'pred')),
         'getstandings': (StandingsPost(parse_standings(YFS.get_standings().json()))),
-        'getnflscores' : (NFLScoresPost(nfl.get_game_score()))
+        'getnflscores': (NFLScoresPost(nfl.get_game_score()))
     }
 
     post = commands.get(command, None)

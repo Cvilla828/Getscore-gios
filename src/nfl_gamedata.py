@@ -1,20 +1,22 @@
 import json
 import urllib
 
+
 class nfl_gameData(object):
     def __init__(self):
         self.week_info = {}
         self.week_info = self.get_game_week_info()
         self.scores = self.get_game_score()
-        
-    def get_game_week_info(self):
+
+    @staticmethod
+    def get_game_week_info():
         url = "http://www.nfl.com/liveupdate/scorestrip/ss.json"
         info = urllib.request.urlopen(url)
         infos = json.load(info)["gms"]
-        return(infos)
-        
-    def get_game_score(self):
-        week_scores = []
+        return infos
+
+    @staticmethod
+    def get_game_score():
         url = "http://www.nfl.com/liveupdate/scorestrip/ss.json"
         info = urllib.request.urlopen(url)
         scores = json.load(info)["gms"]
@@ -26,15 +28,16 @@ class nfl_gameData(object):
                         'away_s': score['vs']
                         }for score in scores
                     ] 
-        return(week_scores)
-    
+        return week_scores
 
-    def get_game_info(self, eid):
+    @staticmethod
+    def get_game_info(eid):
         url = "http://www.nfl.com/liveupdate/game-center/%s/%s_gtd.json" % (eid, eid)
         info = urllib.request.urlopen(url)
         game_play_info = json.load(info)[eid]["drives"]
         return game_play_info
     #print(json.dumps(game_play_info, indent=4, sort_keys=True))
+
     def get_live_plays(self):
         eid = None
         plays = []
@@ -56,7 +59,7 @@ class nfl_gameData(object):
                         ]
             plays.insert(eid, current_play)
             #plays[eid] = current_play
-        return (plays)
+        return plays
 
     def get_past_plays(self, team_name):
         eid = None
@@ -64,11 +67,11 @@ class nfl_gameData(object):
             if team_name.lower() == game['vnn'].lower() or team_name.lower() == game['hnn'].lower():
                 eid = game['eid']
                 
-        if eid == None:
-            return (-1)
+        if eid is None:
+            return -1
         game_info = self.get_game_info(str(eid))
-        p=0
-        past_plays= {}
+        p = 0
+        past_plays = {}
         for i in game_info:
             if i == "crntdrv":
                 break
