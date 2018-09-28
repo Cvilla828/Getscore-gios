@@ -207,7 +207,7 @@ class NFLScoresPost(SlackPost):
                 value = score['home_t'] + " :" + score['home_t'].lower() +":"
                 att.add_field('', value, True)
                 value = score['time']
-                att.add_field('', value, True)
+                att.add_field('', '@' + value + 'ET', True)
                 value = score['away_t'] + " :" + score['away_t'].lower() +":"
                 att.add_field('', value, True)
                 att.set_color('#439FE0')
@@ -260,7 +260,7 @@ class NFLScoresPost(SlackPost):
                 value = score['home_t'] + " :" + score['home_t'].lower() +":"
                 att.add_field('', value, True)
                 value = score['time']
-                att.add_field('', value, True)
+                att.add_field('', '@' + value + 'ET', True)
                 value = score['away_t'] + " :" + score['away_t'].lower() +":"
                 att.add_field('', value, True)
                 att.set_color('#439FE0')
