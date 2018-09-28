@@ -20,6 +20,7 @@ class FantasyGios(object):
         self.credentials ={}
         self.credentials['client_id'] = os.environ.get('client_id')
         self.credentials['client_secret'] = os.environ.get('client_secret')
+        self.credentials['refresh_token'] = os.environ.get('refresh_token')
         
         self.service = OAuth2Service(
             name='example',
@@ -30,11 +31,11 @@ class FantasyGios(object):
             base_url='http://fantasysports.yahooapis.com/')
         self.baseURI = "https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=nfl.l.159366"
         # the return URL is used to validate the request
-        params = {'redirect_uri': 'oob',
-                  'response_type': 'code'}
-        url = self.service.get_authorize_url(**params)
-        webbrowser.open(url)
-        verify = input('Enter code: ')
+#        params = {'redirect_uri': 'oob',
+#                  'response_type': 'code'}
+#        url = self.service.get_authorize_url(**params)
+#        webbrowser.open(url)
+#        verify = input('Enter code: ')
         # once the above URL is consumed by a client we can ask for an access
         # token. note that the code is retrieved from the redirect URL above,
         # as set by the provider
@@ -42,8 +43,8 @@ class FantasyGios(object):
         data = {
             'client_id': self.credentials["client_id"],
             'client_secret': self.credentials["client_secret"],
-            'code': verify,
-            'grant_type': 'authorization_code',
+            'refresh_token': self.credentials['refresh_token'],
+            'grant_type': 'refresh_token',
             'redirect_uri': 'oob'}
         
         self.session = self.service.get_auth_session(data=data, decoder=json.loads)
@@ -53,12 +54,12 @@ class FantasyGios(object):
         self.credentials['xoauth_yahoo_guid'] = self.service.access_token_response.json()['xoauth_yahoo_guid']
         self.credentials['refresh_token'] = self.service.access_token_response.json()['refresh_token']
         self.credentials['expire_at'] = time.time() + 3600
-
-        r = self.session.get(url, params={'format': 'json'})
+        print(self.credentials['refresh_token'])
+       # r = self.session.get(url, params={'format': 'json'})
         #dict for teams
         self.team_id = {}
         self.get_team_id()
-        print(r.status_code)
+        #print(r.status_code)
     
     # checks to see if token is expired
     def token_is_expired(self):
