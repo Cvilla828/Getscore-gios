@@ -8,16 +8,19 @@ import time
 class FantasyGios(object):
     def __init__(self, credentials):
         # load credentials
-        file_path = os.path.join(os.getcwd(), credentials)
-        if not os.path.exists(file_path):
-            raise FileNotFoundError(
-                "credentials file does not exist at: {}".format(file_path)
-            )
-
-        self.credentials_file = open(credentials)
-        self.credentials = json.load(self.credentials_file)
-        self.credentials_file.close()
-
+#        file_path = os.path.join(os.getcwd(), credentials)
+#        if not os.path.exists(file_path):
+#            raise FileNotFoundError(
+#                "credentials file does not exist at: {}".format(file_path)
+#            )
+#
+#        self.credentials_file = open(credentials)
+#        self.credentials = json.load(self.credentials_file)
+#        self.credentials_file.close()
+        self.credentials ={}
+        self.credentials['client_id'] = os.environ.get('client_id')
+        self.credentials['client_secret'] = os.environ.get('client_secret')
+        
         self.service = OAuth2Service(
             name='example',
             client_id=self.credentials["client_id"],
