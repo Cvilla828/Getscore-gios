@@ -1,6 +1,7 @@
 import json
 import urllib
-
+import xmltodict
+import xml.etree.ElementTree as ET
 
 class nfl_gameData(object):
     def __init__(self):
@@ -17,44 +18,69 @@ class nfl_gameData(object):
 
     @staticmethod
     def get_game_score():
-        url = "http://www.nfl.com/liveupdate/scorestrip/ss.json"
+        url = "http://www.nfl.com/liveupdate/scorestrip/ss.xml"
         info = urllib.request.urlopen(url)
-        scores = json.load(info)["gms"]
+        data = info.read()
+        scores = xmltodict.parse(data)['ss']['gms']['g']
         week_scores = [
-                {
-                        'home_t':score['hnn'],
-                        'away_t':score['vnn'],
-                        'home_s':score['hs'],
-                        'away_s': score['vs'],
-                        'quarter':score['q'],
-                        'time':score['t'],
-                        'day':score['d'],
-                        'redzone': score['rz'],
-                        'poss':(score['p'] if 'p' in score.keys() else '')
-                        }for score in scores
-                    ] 
+                        {
+                                'home_t':score['@hnn'],
+                                'away_t':score['@vnn'],
+                                'home_s':score['@hs'],
+                                'away_s': score['@vs'],
+                                'h_state':score['@h'],
+                                'a_sate':score['@v'],
+                                'quarter':score['@q'],
+                                'time':score['@t'],
+                                'day':score['@d'],
+                                'redzone': score['@rz'],
+                                'poss':(score['@p'] if '@p' in score.keys() else ''),
+                                'time_left':(score['@k'] if '@k' in score.keys() else ''),
+                                'winner':''
+                        } for score in scores
+                     ]
+        for size in week_scores:
+            if (size ['quarter'] == 'F'or size['quarter'] == 'FO') and (size['home_s'] > size['away_s']):
+                size['winner'] = size['home_t']
+            elif (size['quarter'] == 'F'or size['quarter'] == 'FO') and (size['home_s'] < size['away_s']):
+                size['winner'] = size['away_t']
+            elif(size['quarter'] == 'F'or size['quarter'] == 'FO'):
+                size['winner'] = 'tie'
         return week_scores
     
     def get_game_score_by_team(self, team_name):
-        url = "http://www.nfl.com/liveupdate/scorestrip/ss.json"
+        url = "http://www.nfl.com/liveupdate/scorestrip/ss.xml"
         info = urllib.request.urlopen(url)
-        scores = json.load(info)["gms"]
+        data = info.read()
+        scores = xmltodict.parse(data)['ss']['gms']['g']
+
         for score in scores:
-            if team_name.lower() == score['vnn'].lower() or team_name.lower() == score['hnn'].lower():
-                team_score =[
+            if team_name.lower() == score['@vnn'].lower() or team_name.lower() == score['@hnn'].lower():
+                team_scores =[
                     {
-                        'home_t':score['hnn'],
-                        'away_t':score['vnn'],
-                        'home_s':score['hs'],
-                        'away_s': score['vs'],
-                        'quarter':score['q'],
-                        'time':score['t'],
-                        'day':score['d'],
-                        'redzone': score['rz'],
-                        'poss':(score['p'] if 'p' in score.keys() else '')
+                        'home_t':score['@hnn'],
+                        'away_t':score['@vnn'],
+                        'home_s':score['@hs'],
+                        'away_s': score['@vs'],
+                        'h_state':score['@h'],
+                        'a_sate':score['@v'],
+                        'quarter':score['@q'],
+                        'time':score['@t'],
+                        'day':score['@d'],
+                        'redzone': score['@rz'],
+                        'poss':(score['@p'] if '@p' in score.keys() else ''),
+                        'time_left':(score['@k'] if '@k' in score.keys() else ''),
+                        'winner':''
                         }
                      ]
-        return team_score
+        for team_score in team_scores:
+            if (team_score['quarter'] == 'F'or team_score['quarter'] == 'FO') and (team_score['home_s'] > team_score['away_s']):
+                team_score['winner'] = team_score['home_t']
+            elif (team_score['quarter'] == 'F'or team_score['quarter'] == 'FO') and (team_score['home_s'] < team_score['away_s']):
+                team_score['winner'] = team_score['away_t']
+            elif(team_score['quarter'] == 'F'or team_score['quarter'] == 'FO'):
+                team_score['winner'] = 'tie'
+        return team_scores
 
     @staticmethod
     def get_game_info(eid):
@@ -112,7 +138,9 @@ class nfl_gameData(object):
     
 
 #game_info= nfl_gameData()
-#week = game_info.week_info
+#week = game_info.get_game_score_by_team('Rams')
+#week = game_info.get_game_score()
+#print(week)
 #try: info = urllib.request.urlopen("http://www.nfl.com/liveupdate/game-center/2018092700/2018092700_gtd.json")
 #except urllib.error.HTTPError as e:
 #    print(e.reason)

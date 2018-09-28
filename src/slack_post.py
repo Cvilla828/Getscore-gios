@@ -210,15 +210,40 @@ class NFLScoresPost(SlackPost):
                 att.add_field('', value, True)
                 value = score['away_t'] + " :" + score['away_t'].lower() +":"
                 att.add_field('', value, True)
+                att.set_color('#439FE0')
+            
+            elif(score['quarter'] == 'F'or score['quarter'] == 'FO'):
+                value = score['quarter']
+                att.add_field('',value, True)
+                value = score['home_t'] + " :" + score['home_t'].lower() +":" + str(score['home_s'])
+                if score['winner'] == score['home_t']:
+                    value = ':trophy: ' + value
+                att.add_field('', value, True)
+                value = score['winner']
+                att.add_field('', value.upper(), True)
+                value = score['away_t'] + " :" + score['away_t'].lower() +":" + str(score['away_s'])
+                if score['winner'] == score['away_t']:
+                    value = ':trophy: ' + value
+                att.add_field('', value, True)
+                att.set_color('#000000')
+            
             else:
                 value = score['quarter']
                 att.add_field('','QTR: '+ value, True)
-                value = score['home_t'] + " :" + score['home_t'].lower() +":" + " " + score['home_s']
+                value = score['home_t'] + " :" + score['home_t'].lower() +":" + " " + str(score['home_s'])
+                if(score['poss'] == score['h_state']):
+                    value = ':football: ' + value
                 att.add_field('', value , True)
-                value = score['time']
+                value = score['time_left']
                 att.add_field('', value, True)
-                value = score['away_t'] + " :" + score['away_t'].lower() +":"+ " " + score['away_s']
+                value = score['away_t'] + " :" + score['away_t'].lower() +":"+ " " + str(score['away_s'])
+                if(score['poss'] == score['a_state']):
+                    value = ':football: ' + value
                 att.add_field('', value, True)
+                if score['redzone'] == 1:
+                    att.set_color('danger')
+                else:
+                    att.set_color('good')
             
             self.add_attachment(att)
             
@@ -238,14 +263,39 @@ class NFLScoresPost(SlackPost):
                 att.add_field('', value, True)
                 value = score['away_t'] + " :" + score['away_t'].lower() +":"
                 att.add_field('', value, True)
+                att.set_color('#439FE0')
+            
+            elif(score['quarter'] == 'F'or score['quarter'] == 'FO'):
+                value = score['quarter']
+                att.add_field('',value, True)
+                value = score['home_t'] + " :" + score['home_t'].lower() +":" + str(score['home_s'])
+                if score['winner'] == score['home_t']:
+                    value = ':trophy: ' + value
+                att.add_field('', value, True)
+                value = score['winner']
+                att.add_field('', value.upper(), True)
+                value = score['away_t'] + " :" + score['away_t'].lower() +":" + str(score['away_s'])
+                if score['winner'] == score['away_t']:
+                    value = ':trophy: ' + value
+                att.add_field('', value, True)
+                att.set_color('#000000')
+            
             else:
                 value = score['quarter']
                 att.add_field('','QTR: '+ value, True)
-                value = score['home_t'] + " :" + score['home_t'].lower() +":" + " " + score['home_s']
+                value = score['home_t'] + " :" + score['home_t'].lower() +":" + " " + str(score['home_s'])
+                if(score['poss'] == score['h_state']):
+                    value = ':football: ' + value
                 att.add_field('', value , True)
-                value = score['time']
+                value = score['time_left']
                 att.add_field('', value, True)
-                value = score['away_t'] + " :" + score['away_t'].lower() +":"+ " " + score['away_s']
+                value = score['away_t'] + " :" + score['away_t'].lower() +":"+ " " + str(score['away_s'])
+                if(score['poss'] == score['a_state']):
+                    value = ':football: ' + value
                 att.add_field('', value, True)
+                if score['redzone'] == 1:
+                    att.set_color('danger')
+                else:
+                    att.set_color('good')
             
             self.add_attachment(att)
