@@ -6,22 +6,27 @@ import time
 
 
 class FantasyGios(object):
-    def __init__(self, credentials):
-        # load credentials
-#        file_path = os.path.join(os.getcwd(), credentials)
-#        if not os.path.exists(file_path):
-#            raise FileNotFoundError(
-#                "credentials file does not exist at: {}".format(file_path)
-#            )
-#
-#        self.credentials_file = open(credentials)
-#        self.credentials = json.load(self.credentials_file)
-#        self.credentials_file.close()
-        self.credentials ={}
-        self.credentials['client_id'] = os.environ.get('client_id')
-        self.credentials['client_secret'] = os.environ.get('client_secret')
-        self.credentials['refresh_token'] = os.environ.get('refresh_token')
+    def __init__(self, credentials_file):
         
+        # load credentials
+        self.credentials ={}
+
+        # attempt to load credentials from OS:
+        client_id = os.environ.get('client_id')
+        client_secret = os.environ.get('client_secret')
+        client_reftoken = os.environ.get('refresh_token')
+        
+        if client_id is None or client_secret is None:
+            file_path = os.path.join(os.getcwd(), credentials)
+            if not os.path.exists(file_path):
+                raise FileNotFoundError("credentials file does not exist at: {}".format(file_path))
+            self.credentials_file = open(file_path)
+            self.credentials = json.load(self.credentials_file)
+            self.credentials_file.close()
+        else:
+            self.credentials['client_id'] = client_id
+            self.credentials['client_secret'] = client_secret
+
         self.service = OAuth2Service(
             name='example',
             client_id=self.credentials["client_id"],
@@ -30,16 +35,19 @@ class FantasyGios(object):
             authorize_url='https://api.login.yahoo.com/oauth2/request_auth',
             base_url='http://fantasysports.yahooapis.com/')
         self.baseURI = "https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=nfl.l.159366"
+
         # the return URL is used to validate the request
-#        params = {'redirect_uri': 'oob',
-#                  'response_type': 'code'}
-#        url = self.service.get_authorize_url(**params)
-#        webbrowser.open(url)
-#        verify = input('Enter code: ')
+
         # once the above URL is consumed by a client we can ask for an access
         # token. note that the code is retrieved from the redirect URL above,
         # as set by the provider
 
+        if client_reftoken is not None:
+            self.credentials["refresh_token"] = client_reftoken
+        else:
+            # we need to get it!
+            self.obtain_token()
+        
         data = {
             'client_id': self.credentials["client_id"],
             'client_secret': self.credentials["client_secret"],
@@ -83,6 +91,22 @@ class FantasyGios(object):
         self.session = self.service.get_auth_session(data=data, decoder=json.loads)
         
         
+    def obtain_token(self):
+        params = {'redirect_uri': 'oob',
+                    'response_type': 'code'}
+        url = self.service.get_authorize_url(**params)
+        webbrowser.open(url)
+        verify = input('Enter code: ')
+
+        data = {
+            'client_id': self.credentials["client_id"],
+            'client_secret': self.credentials["client_secret"],
+            'code': verify,
+            'grant_type': 'authorization_code',
+            'redirect_uri': 'oob'}
+        self.session = self.service.get_auth_session(data=data, decoder=json.loads)
+        self.credentials['refresh_token'] = self.service.access_token_response.json()['refresh_token']
+        print("Your refresh token is [{}]. Please add it to the refresh_token environment variable!".format(self.credentials['refresh_token']))
 
     def get_standings(self):
         # new_url = 'https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=nfl.l.159366/standings'
