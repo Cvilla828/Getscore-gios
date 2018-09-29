@@ -1,0 +1,5 @@
+{
+    "python.pythonPath": "C:\\Users\\David\\AppData\\Local\\conda\\conda\\envs\\py36\\python.exe",
+    "python.terminal.executeInFileDir": true,
+    "python.linting.pylintEnabled": false
+}
