@@ -4,6 +4,9 @@ Slack Bot for Yahoo Fantasy Football; Team GIOS FF
 ## Commands
    - `@getscore getscore`: returns the scores for all match ups in league for current week
    - `@getscore getpredictions`: returns the predicted scores for all match ups in league for current week
+   - `@getscore getnflscores`: returns all nfl teams' match-ups, scores, and status
+   - `@getscore getnflscores teamname`: returns specified nfl team's match-ups, scores, and status
+   
 
 ## Dependenies
   - rauth
