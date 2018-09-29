@@ -4,3 +4,4 @@ credentials.json
 __pycache__/
 src/test.json
 *.pyc
+/.vscode/*
