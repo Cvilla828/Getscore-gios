@@ -17,7 +17,7 @@ class FantasyGios(object):
         client_reftoken = os.environ.get('refresh_token')
         
         if client_id is None or client_secret is None:
-            file_path = os.path.join(os.getcwd(), credentials)
+            file_path = os.path.join(os.getcwd(), credentials_file)
             if not os.path.exists(file_path):
                 raise FileNotFoundError("credentials file does not exist at: {}".format(file_path))
             self.credentials_file = open(file_path)
@@ -133,6 +133,11 @@ class FantasyGios(object):
             self.team_id[temp['fantasy_content']['leagues']['0']['league'][1]['teams'][str(i)]['team'][0][2]['name']] = temp['fantasy_content']['leagues']['0']['league'][1]['teams'][str(i)]['team'][0][0]['team_key']
         # print(self.team_id)
         
+    # def get_team_roster(self, name):
+    #     s = self.session.get('https://fantasysports.yahooapis.com/fantasy/v2/' + 'teams;team_keys='+ self.team_id[name]  + '/players', params={'format': 'json'})
+    #     return s
+
     def get_team_roster(self, name):
-        s = self.session.get('https://fantasysports.yahooapis.com/fantasy/v2/' + 'teams;team_keys='+ self.team_id[name]  + '/players', params={'format': 'json'})
+        url = 'https://fantasysports.yahooapis.com/fantasy/v2/team/%s/roster' % self.team_id[name]
+        s = self.session.get(url=url, params={'format': 'json'})
         return s
