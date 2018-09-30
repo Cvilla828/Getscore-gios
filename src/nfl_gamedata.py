@@ -29,7 +29,7 @@ class nfl_gameData(object):
                                 'home_s':score['@hs'],
                                 'away_s': score['@vs'],
                                 'h_state':score['@h'],
-                                'a_sate':score['@v'],
+                                'a_state':score['@v'],
                                 'quarter':score['@q'],
                                 'time':score['@t'],
                                 'day':score['@d'],
