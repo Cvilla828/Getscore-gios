@@ -63,8 +63,7 @@ def handle_command(command, channel):
         parameter = None
         
     commands = {
-        'getscore': (ScoresPost(parse_scores(YFS.get_score().json()), 'score')),
-        'getpredictions': (ScoresPost(parse_scores(YFS.get_score().json()), 'pred')),
+        'getscore': (ScoresPost(parse_scores(YFS.get_score().json()))),
         'getstandings': (StandingsPost(parse_standings(YFS.get_standings().json()))),
         'getnflscores': (NFLScoresPost(nfl.get_game_score_by_team(team), 'team') if team != None else NFLScoresPost(nfl.get_game_score(), 'league')),
         'getroster': (RosterPost(parse_roster(YFS.get_team_roster(parameter).json()), parameter) if parameter != None else '')

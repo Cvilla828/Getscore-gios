@@ -10,7 +10,9 @@ def parse_scores(scores_json):
     matches = [
         {
             'name_team_1': base_json[str(i)]['matchup']['0']['teams']['0']['team'][0][2]['name'],
+            'manager_team_1': base_json[str(i)]['matchup']['0']['teams']['0']['team'][0][19]['managers'][0]['manager']['nickname'],
             'name_team_2': base_json[str(i)]['matchup']['0']['teams']['1']['team'][0][2]['name'],
+            'manager_team_2': base_json[str(i)]['matchup']['0']['teams']['1']['team'][0][19]['managers'][0]['manager']['nickname'],
             'score_team_1': base_json[str(i)]['matchup']['0']['teams']['0']['team'][1]['team_points']['total'],
             'score_team_2': base_json[str(i)]['matchup']['0']['teams']['1']['team'][1]['team_points']['total'],
             'pred_team_1': base_json[str(i)]['matchup']['0']['teams']['0']['team'][1]['team_projected_points']['total'],

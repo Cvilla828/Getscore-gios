@@ -3,9 +3,6 @@ import slackclient as SC
 import operator
 import json
 
-GREEN_CHECK_THRESHOLD = 0.85
-WHITE_CHECK_THRESHOLD = 0.60
-ENABLE_EMOJI = True
 
 class SlackPost(object):
 
@@ -23,7 +20,7 @@ class SlackPost(object):
             "chat.postMessage",
             channel=channel,
             text=self.text,
-            attachments=json.dumps([a.to_dict() for a in self.attachments]),
+            attachments=json.dumps([a.to_dict() for a in self.attachments])
         )
 
 
@@ -80,14 +77,17 @@ class SlackPostAttachment(object):
     def to_dict(self):
         d = {}
         d['title'] = self.title
+        d['mrkdwn_in'] = []
         if self.fallback is not None: 
             d['fallback'] = self.fallback
         if self.title_link is not None:
             d['title_link'] = self.title_link
         if self.pretext is not None:
             d['pretext'] = self.pretext
+            d['mrkdwn_in'].append("pretext")
         if self.fields is not None and len(self.fields)>0:
             d['fields'] = self.fields
+            d['mrkdwn_in'].append("fields")
         if self.color is not None:
             d['color'] = self.color
         if self.author_name is not None:
@@ -98,6 +98,7 @@ class SlackPostAttachment(object):
             d['author_icon'] = self.author_icon
         if self.text is not None:
             d['text'] = self.text
+            d['mrkdwn_in'].append("text")
         if self.image_url is not None:
             d['image_url'] = self.image_url
         if self.thumb_url is not None:
@@ -136,8 +137,8 @@ class StandingsPost(SlackPost):
         att.set_title("GIOS FF - Current Standings", "https://football.fantasysports.yahoo.com/f1/159366")
         for s in ordered:
             pts_wlt = "{:3.2f} ({}-{}-{}) {}".format(s['points_for'], s['wins'], s['losses'], s['ties'], emoji.get(s['rank'], ":transparent:"))
-            att.add_field(s['name'], "", True)
-            att.add_field(pts_wlt, "", True)
+            att.add_field("", s['name'], True)
+            att.add_field("", pts_wlt, True)
         self.add_attachment(att)
 
 
@@ -148,42 +149,63 @@ class RosterPost(SlackPost):
             self.set_roster(parsed_roster, team_name)
 
     def set_roster(self, parsed_roster, team_name):
+        status_color = {
+            'IR': 'danger',
+            'SUSP': 'danger',
+            'O': 'danger',
+            'Q': 'warning'
+        }
         att = SlackPostAttachment()
         att.set_title("GIOS FF - %s's Roster" % team_name, "https://football.fantasysports.yahoo.com/f1/159366")
         self.add_attachment(att)
         for player in parsed_roster:
             att = SlackPostAttachment()
             name = "%s - %s :%s:" % (player['position'], player['name_full'], player['team'].split()[-1])
-            att.add_field(name, "", True)
+            att.add_field("", name, False)
             #att.add_field(player['position'], "", True)
-            att.add_field(player['status'], '', True)
-            if(player['status'] == 'IR' or player['status'] == 'O' or player['status']=='SUSP'):
-                att.set_color('danger')
-            elif(player['status'] == 'Q'):
-                att.set_color('warning')
-            else:
-                att.set_color('good')
+            #att.add_field(player['status'], '', True)
+            att.set_color(status_color.get(player['status'], 'good'))
             self.add_attachment(att)
 
 
 class ScoresPost(SlackPost):
-    def __init__(self, parsed_scores=None, score_type=None):
+    def __init__(self, parsed_scores=None):
         super(ScoresPost, self).__init__()
-        if parsed_scores is not None and score_type is not None:
-            self.set_scores(parsed_scores, score_type)
+        if parsed_scores is not None:
+            self.set_scores(parsed_scores)
     
-    def set_scores(self, parsed_scores, score_type):
-        title = "Current Scores" if score_type=="score" else ("Initial Predictions" if score_type=="pred" else "???")
+    def set_scores(self, parsed_scores):
         att = SlackPostAttachment()
-        att.set_title("GIOS FF - {0}".format(title), "https://football.fantasysports.yahoo.com/f1/159366")
-        for score in parsed_scores:
-            title = score["name_team_1"] + ("" if not ENABLE_EMOJI else (" :heavy_check_mark:" if score["chance_team_1"] > GREEN_CHECK_THRESHOLD else (" :white_check_mark:" if score["chance_team_1"] > WHITE_CHECK_THRESHOLD else "")))
-            value = "{} _({}%)_".format(score["{}_team_1".format(score_type)], int(100*score["chance_team_1"]))
-            att.add_field(title, value, True)
-            title = score["name_team_2"] + ("" if not ENABLE_EMOJI else (" :heavy_check_mark:" if score["chance_team_2"] > GREEN_CHECK_THRESHOLD else (" :white_check_mark:" if score["chance_team_2"] > WHITE_CHECK_THRESHOLD else "")))
-            value = "{} _({}%)_".format(score["{}_team_2".format(score_type)], int(100*score["chance_team_2"]))
-            att.add_field(title, value, True)
+        att.set_title("GIOS FF - Current Scores", "https://football.fantasysports.yahoo.com/f1/159366")
         self.add_attachment(att)
+        sel_emoji = (lambda s: (":heavy_check_mark:" if s > 0.85 else (":white_check_mark:" if s > 0.60 else ":transparent:")))
+        for score in parsed_scores:
+            att = SlackPostAttachment()
+            chance1 = score["chance_team_1"]
+            chance2 = score["chance_team_2"]
+            pred1_orig = float(score["pred_team_1"]) / (float(score["pred_team_1"])+float(score["pred_team_2"]))
+            pred2_orig = 1. - pred1_orig
+            color = "good"
+            if pred1_orig > pred2_orig:
+                if chance2-chance1 > 10.:
+                    color = "danger"
+                elif chance2 > chance1:
+                    color = "warning"
+            else:
+                if chance1-chance2 > 10.:
+                    color = "danger"
+                elif chance1 > chance2:
+                    color = "warning"
+            att.set_color(color)
+            name1 = "{} *{}* _({})_".format(sel_emoji(chance1), score["name_team_1"].replace("*", "٭"), score["manager_team_1"])
+            name2 = "{} *{}* _({})_".format(sel_emoji(chance2), score["name_team_2"].replace("*", "٭"), score["manager_team_2"])
+            value1 = ":transparent: {}/{} - *{}%*".format(score["score_team_1"], score["pred_team_1"], int(100*chance1))
+            value2 = ":transparent: {}/{} - *{}%*".format(score["score_team_2"],score["pred_team_2"], int(100*chance2))
+            att.add_field("", name1, True)
+            att.add_field("", name2, True)
+            att.add_field("", value1, True)
+            att.add_field("", value2, True)
+            self.add_attachment(att)
 
 
 class NFLScoresPost(SlackPost):
@@ -218,12 +240,16 @@ class NFLScoresPost(SlackPost):
                 value = score['home_t'] + " :" + score['home_t'].lower() +":" + str(score['home_s'])
                 if score['winner'] == score['home_t']:
                     value = ':trophy: ' + value
+                else:
+                    value = ':transparent: ' + value
                 att.add_field('', value, True)
                 value = score['winner']
                 att.add_field('', value.upper(), True)
                 value = score['away_t'] + " :" + score['away_t'].lower() +":" + str(score['away_s'])
                 if score['winner'] == score['away_t']:
                     value = ':trophy: ' + value
+                else:
+                    value = ':transparent: ' + value
                 att.add_field('', value, True)
                 att.set_color('#000000')
             
@@ -233,12 +259,16 @@ class NFLScoresPost(SlackPost):
                 value = score['home_t'] + " :" + score['home_t'].lower() +":" + " " + str(score['home_s'])
                 if(score['poss'] == score['h_state']):
                     value = ':football: ' + value
+                else:
+                    value = ':transparent: ' + value
                 att.add_field('', value , True)
                 value = score['time_left']
                 att.add_field('', value, True)
                 value = score['away_t'] + " :" + score['away_t'].lower() +":"+ " " + str(score['away_s'])
                 if(score['poss'] == score['a_state']):
                     value = ':football: ' + value
+                else:
+                    value = ':transparent: ' + value
                 att.add_field('', value, True)
                 if score['redzone'] == 1:
                     att.set_color('danger')
@@ -271,12 +301,16 @@ class NFLScoresPost(SlackPost):
                 value = score['home_t'] + " :" + score['home_t'].lower() +":" + str(score['home_s'])
                 if score['winner'] == score['home_t']:
                     value = ':trophy: ' + value
+                else:
+                    value = ':transparent: ' + value
                 att.add_field('', value, True)
                 value = score['winner']
                 att.add_field('', value.upper(), True)
                 value = score['away_t'] + " :" + score['away_t'].lower() +":" + str(score['away_s'])
                 if score['winner'] == score['away_t']:
                     value = ':trophy: ' + value
+                else:
+                    value = ':transparent: ' + value
                 att.add_field('', value, True)
                 att.set_color('#000000')
             
@@ -286,12 +320,16 @@ class NFLScoresPost(SlackPost):
                 value = score['home_t'] + " :" + score['home_t'].lower() +":" + " " + str(score['home_s'])
                 if(score['poss'] == score['h_state']):
                     value = ':football: ' + value
+                else:
+                    value = ':transparent: ' + value
                 att.add_field('', value , True)
                 value = score['time_left']
                 att.add_field('', value, True)
                 value = score['away_t'] + " :" + score['away_t'].lower() +":"+ " " + str(score['away_s'])
                 if(score['poss'] == score['a_state']):
                     value = ':football: ' + value
+                else:
+                    value = ':transparent: ' + value
                 att.add_field('', value, True)
                 if score['redzone'] == 1:
                     att.set_color('danger')
