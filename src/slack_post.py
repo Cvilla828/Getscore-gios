@@ -111,6 +111,13 @@ class SlackPostAttachment(object):
             d['ts'] = int(time.time())
         return d
 
+class EchoPost(SlackPost):
+    def __init__(self, text, opt_response=None):
+        if opt_response is not None:
+            super(EchoPost, self).__init__("{} ({})".format(text, opt_response))
+        else:
+            super(EchoPost, self).__init__(text)
+
 class StandingsPost(SlackPost):
     def __init__(self, parsed_standings=None):
         super(StandingsPost, self).__init__()
