@@ -52,6 +52,7 @@ def handle_command(command, channel):
     """
         Executes bot command if the command is known
     """
+    post = None
     parameter = None 
     team = None
     if command.find(' ') != -1:
@@ -61,21 +62,26 @@ def handle_command(command, channel):
     if parameter not in YFS.team_id.keys():
         team = parameter
         parameter = None
-        
-    commands = {
-        'getscore': (ScoresPost(parse_scores(YFS.get_score().json()))),
-        'getstandings': (StandingsPost(parse_standings(YFS.get_standings().json()))),
-        'getnflscores': (NFLScoresPost(nfl.get_game_score_by_team(team), 'team') if team != None else NFLScoresPost(nfl.get_game_score(), 'league')),
-        'getroster': (RosterPost(parse_roster(YFS.get_team_roster(parameter).json()), parameter) if parameter != None else '')
-    }
     
-    
-   
-        
-    post = commands.get(command, None)
+    commands = ["getscore", "getstandings", "getnflscores", "getroster", "getrespect"]
+
+    if command == "getscore" or command == "getscores":
+        post = ScoresPost(parse_scores(YFS.get_score().json()))
+    elif command == "getstandings":
+        post = StandingsPost(parse_standings(YFS.get_standings().json()))
+    elif command == "getnflscores":
+        if team != None:
+            post = NFLScoresPost(nfl.get_game_score_by_team(team), 'team')
+        else:
+            post = NFLScoresPost(nfl.get_game_score(), 'league')
+    elif command == "getroster":
+        if parameter is not None:
+            post = RosterPost(parse_roster(YFS.get_team_roster(parameter).json()), parameter)
+    elif command == "getrespect":
+        post = EchoPost("F", team)
    
     # Default response is help text for the user
-    default_response = "Not sure what you mean. Try one of these: *{}*.".format(", ".join(commands.keys()))
+    default_response = "Not sure what you mean. Try one of these: *{}*.".format(", ".join(commands))
 
     if isinstance(post, SlackPost):
         post.send(slack_client, channel)
