@@ -1,3 +1,4 @@
+from operator import itemgetter
 
 # Number of matches per week
 MATCHES = 5
@@ -24,19 +25,34 @@ def parse_scores(scores_json):
 
 
 def parse_roster(roster_json):
-    base_json = roster_json['fantasy_content']['teams']['0']['team'][1]['players']
-    roster = [
-        {
-            'name_full': base_json[str(i)]['player'][0][2]['name']['full'],
-            'position': base_json[str(i)]['player'][0][-3]['eligible_positions'][0]['position'],
-            'team': base_json[str(i)]['player'][0][5].get(
-                'editorial_team_full_name', base_json[str(i)]['player'][0][7].get(
-                    'editorial_team_full_name', base_json[str(i)]['player'][0][6].get('editorial_team_full_name', ''))),
-            'status': base_json[str(i)]['player'][0][3].get('status', '')
-        } for i in range(0, ROSTER)
-    ]
-   
-    return roster
+    # t['fantasy_content']['team'][1]['roster']['0']['players']['0']['player'][1]['selected_position'][1]['position']
+    base_json = roster_json['fantasy_content']['team'][1]['roster']['0']['players']
+    # roster = [
+    #     {
+    #         'name_full': base_json[str(i)]['player'][0][2]['name']['full'],
+    #         'position': base_json[str(i)]['player'][1]['selected_position'][1]['position'],
+    #         'team': base_json[str(i)]['player'][0][5].get(
+    #             'editorial_team_full_name', base_json[str(i)]['player'][0][7].get(
+    #                 'editorial_team_full_name', base_json[str(i)]['player'][0][6].get('editorial_team_full_name', ''))),
+    #         'status': base_json[str(i)]['player'][0][3].get('status', '')
+    #     } for i in range(0, ROSTER)
+    # ]
+    roster = []
+    for i in range(0, ROSTER):
+        temp = base_json.get(str(i), '')
+        if temp != '':
+            roster.append(
+                {
+                    'name_full': base_json[str(i)]['player'][0][2]['name']['full'],
+                    'position': base_json[str(i)]['player'][1]['selected_position'][1]['position'],
+                    'team': base_json[str(i)]['player'][0][5].get(
+                        'editorial_team_full_name', base_json[str(i)]['player'][0][7].get(
+                            'editorial_team_full_name',
+                            base_json[str(i)]['player'][0][6].get('editorial_team_full_name', ''))),
+                    'status': base_json[str(i)]['player'][0][3].get('status', '')
+                }
+            )
+    return sorted(roster, key=itemgetter('position'), reverse=True)
 
 
 def parse_standings(standings_json):
