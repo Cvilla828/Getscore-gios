@@ -70,7 +70,7 @@ def handle_command(command, channel):
     elif command == "getstandings":
         post = StandingsPost(parse_standings(YFS.get_standings().json()))
     elif command == "getnflscores":
-        if team != None:
+        if team is not None:
             post = NFLScoresPost(nfl.get_game_score_by_team(team), 'team')
         else:
             post = NFLScoresPost(nfl.get_game_score(), 'league')
@@ -80,7 +80,7 @@ def handle_command(command, channel):
     elif command == "getrespect":
         post = EchoPost("F", team)
     elif command == "getpastnflplays":
-        if team != None:
+        if team is not None:
             post = NFLPlaysPost(nfl.get_past_plays(team), 'team')
         else:
             post = NFLPlaysPost(nfl.ge_live_plays(), 'league')
