@@ -338,7 +338,7 @@ class NFLScoresPost(SlackPost):
                 else:
                     value = ':transparent: ' + value
                 att.add_field('', value, True)
-                if score['redzone'] == 1:
+                if score['redzone'] == '1':
                     att.set_color('danger')
                 else:
                     att.set_color('good')
