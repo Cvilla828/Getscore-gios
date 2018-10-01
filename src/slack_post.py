@@ -344,3 +344,32 @@ class NFLScoresPost(SlackPost):
                     att.set_color('good')
             
             self.add_attachment(att)
+
+class NFLPlaysPost(SlackPost):
+    def __init__(self, nfl_plays=None, play_type=None):
+        super(NFLPlaysPost, self).__init__()
+        if nfl_plays is not None and play_type == 'league':
+            self.set_nfl_plays(nfl_plays)
+        if nfl_plays is not None and play_type == 'team':
+            self.set_nfl_plays_by_name(nfl_plays)
+        
+    def set_nfl_plays(self, nfl_plays):
+        title = "Past NFL Plays :nfl:" 
+        att = SlackPostAttachment()
+        att.set_title(title, "https://sports.yahoo.com/nfl/scoreboard/")
+        self.add_attachment(att)
+    
+    def set_nfl_plays_by_name(self, nfl_plays):
+        title = "Past NFL Plays %s vs %s :nfl:" % (nfl_plays['home_t'], nfl_plays['away_t'])
+        att = SlackPostAttachment()
+        att.set_title(title, "https://sports.yahoo.com/nfl/scoreboard/")
+        self.add_attachment(att)
+        for play in nfl_plays['plays']:
+            att = SlackPostAttachment()
+            value = "QTR"
+            att.add_field('', value, True)
+            value = 'Possession: %s' % (play['poss']) 
+            att.add_field('', value, True)
+            value = score['desc']
+            att.add_field('', value, True)
+            att.set_color('#000000')

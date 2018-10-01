@@ -63,7 +63,7 @@ def handle_command(command, channel):
         team = parameter
         parameter = None
     
-    commands = ["getscore", "getstandings", "getnflscores", "getroster", "getrespect"]
+    commands = ["getscore", "getstandings", "getnflscores", "getroster", "getrespect", "getpastnflplays"]
 
     if command == "getscore" or command == "getscores":
         post = ScoresPost(parse_scores(YFS.get_score().json()))
@@ -79,6 +79,11 @@ def handle_command(command, channel):
             post = RosterPost(parse_roster(YFS.get_team_roster(parameter).json()), parameter)
     elif command == "getrespect":
         post = EchoPost("F", team)
+    elif command == "getpastnflplays":
+        if team != None:
+            post = NFLPlaysPost(nfl.get_past_plays(team), 'team')
+        else:
+            post = NFLPlaysPost(nfl.ge_live_plays(), 'league')
    
     # Default response is help text for the user
     default_response = "Not sure what you mean. Try one of these: *{}*.".format(", ".join(commands))

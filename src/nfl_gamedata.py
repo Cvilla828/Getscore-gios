@@ -3,6 +3,7 @@ import urllib
 import xmltodict
 import xml.etree.ElementTree as ET
 
+
 class nfl_gameData(object):
     def __init__(self):
         self.week_info = {}
@@ -85,33 +86,66 @@ class nfl_gameData(object):
     @staticmethod
     def get_game_info(eid):
         url = "http://www.nfl.com/liveupdate/game-center/%s/%s_gtd.json" % (eid, eid)
-        info = urllib.request.urlopen(url)
-        game_play_info = json.load(info)[eid]["drives"]
-        return game_play_info
+        game_play_info = None
+        home_info = None
+        away_info = None
+        try:
+            info = urllib.request.urlopen(url)
+            game_play_info = json.load(info)[eid]["drives"]
+            info = urllib.request.urlopen(url)
+            home_info = json.load(info)[eid]["home"]
+            info = urllib.request.urlopen(url)
+            away_info = json.load(info)[eid]["away"]
+        except urllib.error.HTTPError:
+            #print("Cannot Load %s, game not found" % (url))
+            pass
+        return game_play_info, home_info, away_info
     #print(json.dumps(game_play_info, indent=4, sort_keys=True))
 
     def get_live_plays(self):
         eid = None
-        plays = []
+        plays = {}
+        all_plays = {}
+        
         current_play = None
         for game in self.week_info:
             eid = game['eid']
-            game_info = self.get_game_info(str(eid))
-            for i in game_info:
-                if i == "crntdrv":
-                    break
-                current_play = [
-                        {
-                                'quarter': game_info[i]['plays'][str(j)]['qtr'],
-                                'desc': game_info[i]['plays'][str(j)]['desc'],
-                                'drive': str(i),
-                                'play_num': str(j),
-                                'printed':'no'
-                        }for j in game_info[i]["plays"]
-                        ]
-            plays.insert(eid, current_play)
+            game_info, home_info, away_info = self.get_game_info(str(eid))
+#            for i in game_info:
+#                if i == "crntdrv":
+#                    break
+#                current_play = [
+#                        {
+#                                'quarter': game_info[i]['plays'][str(j)]['qtr'],
+#                                'desc': game_info[i]['plays'][str(j)]['desc'],
+#                                'drive': str(i),
+#                                'play_num': str(j),
+#                                'printed':'no'
+#                        }for j in game_info[i]["plays"]
+#                        ]
+            if(game_info is not None):
+                info = {}
+                info['home_t'] = home_info['abbr']
+                info['away_t'] = away_info['abbr']
+                for i in game_info:
+                    if i == "crntdrv":
+                        break
+                    for j in game_info[i]["plays"]:
+                        
+                        
+                        string = game_info[i]["plays"][str(j)]["desc"]
+                        if string.find("TOUCHDOWN") != -1:
+                            past_plays = {}
+                            past_plays['desc'] = string
+                            past_plays['quarter'] = game_info[i]["plays"][str(j)]['qtr']
+                            past_plays['poss'] = game_info[i]["plays"][str(j)]['posteam']
+                    
+                            #print(string + '\n')
+                            plays[str(j)] = past_plays
+                info['plays'] = plays
+                all_plays[str(eid)] = info
             #plays[eid] = current_play
-        return plays
+        return all_plays
 
     def get_past_plays(self, team_name):
         eid = None
@@ -121,24 +155,38 @@ class nfl_gameData(object):
                 
         if eid is None:
             return -1
-        game_info = self.get_game_info(str(eid))
+        game_info, home_info, away_info = self.get_game_info(str(eid))
         p = 0
-        past_plays = {}
+        plays = {}
+#        past_plays = {}
+        info = {}
+        info['home_t'] = home_info['abbr']
+        info['away_t'] = away_info['abbr']
         for i in game_info:
             if i == "crntdrv":
                 break
             for j in game_info[i]["plays"]:
+                
                 string = game_info[i]["plays"][str(j)]["desc"]
                 if string.find("TOUCHDOWN") != -1:
-                    past_plays[p] = string
-                    p=+1
-        return past_plays
+                    past_plays = {}
+                    past_plays['desc'] = string
+                    past_plays['quarter'] = game_info[i]["plays"][str(j)]['qtr']
+                    past_plays['poss'] = game_info[i]["plays"][str(j)]['posteam']
+                    
+                    #print(string + '\n')
+                    plays[str(j)] = past_plays
+            info['plays'] = plays
+        return info
     
 
     
 
-#game_info= nfl_gameData()
-#week = game_info.get_game_score_by_team('Rams')
+game_info= nfl_gameData()
+week = game_info.get_past_plays('rams')['plays']
+file=open('test.json', 'w')
+file.write(json.dumps(week, sort_keys=True, indent=4))
+file.close()
 #week = game_info.get_game_score()
 #print(week)
 #try: info = urllib.request.urlopen("http://www.nfl.com/liveupdate/game-center/2018092700/2018092700_gtd.json")
