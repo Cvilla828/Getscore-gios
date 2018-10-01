@@ -40,9 +40,9 @@ class nfl_gameData(object):
                         } for score in scores
                      ]
         for size in week_scores:
-            if (size ['quarter'] == 'F'or size['quarter'] == 'FO') and (size['home_s'] > size['away_s']):
+            if (size ['quarter'] == 'F'or size['quarter'] == 'FO') and (int(size['home_s'], 10) > int(size['away_s'], 10)):
                 size['winner'] = size['home_t']
-            elif (size['quarter'] == 'F'or size['quarter'] == 'FO') and (size['home_s'] < size['away_s']):
+            elif (size['quarter'] == 'F'or size['quarter'] == 'FO') and (int(size['home_s'], 10) < int(size['away_s'], 10)):
                 size['winner'] = size['away_t']
             elif(size['quarter'] == 'F'or size['quarter'] == 'FO'):
                 size['winner'] = 'tie'
@@ -74,9 +74,9 @@ class nfl_gameData(object):
                         }
                      ]
         for team_score in team_scores:
-            if (team_score['quarter'] == 'F'or team_score['quarter'] == 'FO') and (team_score['home_s'] > team_score['away_s']):
+            if (team_score['quarter'] == 'F'or team_score['quarter'] == 'FO') and (int(team_score['home_s'], 10) > int(team_score['away_s'], 10)):
                 team_score['winner'] = team_score['home_t']
-            elif (team_score['quarter'] == 'F'or team_score['quarter'] == 'FO') and (team_score['home_s'] < team_score['away_s']):
+            elif (team_score['quarter'] == 'F'or team_score['quarter'] == 'FO') and (int(team_score['home_s'], 10) < int(team_score['away_s'], 10)):
                 team_score['winner'] = team_score['away_t']
             elif(team_score['quarter'] == 'F'or team_score['quarter'] == 'FO'):
                 team_score['winner'] = 'tie'
