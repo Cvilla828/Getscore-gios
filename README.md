@@ -11,6 +11,7 @@ Slack Bot for Yahoo Fantasy Football; Team GIOS FF
 ## Dependenies
   - rauth
   - slackclient
+  - xmltodict
 
 ## Credentials file
   Client ID (Consumer Key) and Client Secret (Consumer Secret) from [Yahoo Developer Network](https://developer.yahoo.com/fantasysports/guide/) required.
