@@ -373,3 +373,4 @@ class NFLPlaysPost(SlackPost):
             value = nfl_plays['plays'][play]['desc']
             att.add_field('', value, True)
             att.set_color('#000000')
+            self.add_attachment(att)
