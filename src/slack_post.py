@@ -366,10 +366,10 @@ class NFLPlaysPost(SlackPost):
         self.add_attachment(att)
         for play in nfl_plays['plays']:
             att = SlackPostAttachment()
-            value = "QTR: {}" % (nfl_plays['plays']['play']['quarter'])
+            value = "QTR: {}" % (nfl_plays['plays'][play]['quarter'])
             att.add_field('', value, True)
-            value = 'Possession: %s' % (nfl_plays['plays']['play']['poss'])
+            value = 'Possession: %s' % (nfl_plays['plays'][play]['poss'])
             att.add_field('', value, True)
-            value = nfl_plays['plays']['play']['desc']
+            value = nfl_plays['plays'][play]['desc']
             att.add_field('', value, True)
             att.set_color('#000000')
