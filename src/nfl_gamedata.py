@@ -182,11 +182,14 @@ class nfl_gameData(object):
 
     
 
-game_info= nfl_gameData()
-week = game_info.get_past_plays('rams')['plays']
-file=open('test.json', 'w')
-file.write(json.dumps(week, sort_keys=True, indent=4))
-file.close()
+#game_info= nfl_gameData()
+#week = game_info.get_past_plays('rams')
+#for i in week['plays']:
+#    print(i['desc'])
+
+# file=open('test.json', 'w')
+# file.write(json.dumps(week, sort_keys=True, indent=4))
+# file.close()
 #week = game_info.get_game_score()
 #print(week)
 #try: info = urllib.request.urlopen("http://www.nfl.com/liveupdate/game-center/2018092700/2018092700_gtd.json")
