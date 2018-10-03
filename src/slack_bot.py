@@ -7,7 +7,7 @@ from fantasy_gios import FantasyGios
 from yahoo_parser import *
 from slack_post import *
 import json
-from nfl_gamedata import *
+from nflgamedata import *
 
 # instantiate Slack client
 slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
@@ -22,7 +22,8 @@ cred_file = '..\credentials.json'
 
 YFS = FantasyGios(cred_file)
 YFS.get_team_id()
-nfl = nfl_gameData()
+nfl = NFLGameData()
+
 
 def parse_bot_commands(slack_events):
     """
@@ -83,7 +84,7 @@ def handle_command(command, channel):
         if team is not None:
             post = NFLPlaysPost(nfl.get_past_plays(team), 'team')
         else:
-            post = NFLPlaysPost(nfl.ge_live_plays(), 'league')
+            post = NFLPlaysPost(nfl.get_live_plays(), 'league')
    
     # Default response is help text for the user
     default_response = "Not sure what you mean. Try one of these: *{}*.".format(", ".join(commands))
