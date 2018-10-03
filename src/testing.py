@@ -1,4 +1,5 @@
 from fantasy_gios import FantasyGios
+from nflgamedata import NFLGameData
 from yahoo_parser import *
 
 import json
@@ -20,9 +21,10 @@ ff = FantasyGios(cred_file)
 # print(format_scores(test, 'pred'))
 # print(format_scores(test, 'score'))
 
-response_roster = ff.get_team_roster('TehGookstuh')
+# response_roster = ff.get_team_roster('TehGookstuh')
 
 # ff.renew_token()
-
+testing = NFLGameData()
+plays = testing.get_live_plays()
 #   print(json.dumps(response_roster.json(), indent=4, sort_keys=True))
 import pdb; pdb.set_trace()

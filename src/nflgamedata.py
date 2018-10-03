@@ -4,7 +4,7 @@ import xmltodict
 import xml.etree.ElementTree as ET
 
 
-class nfl_gameData(object):
+class NFLGameData(object):
     def __init__(self):
         self.week_info = {}
         self.week_info = self.get_game_week_info()
@@ -182,7 +182,7 @@ class nfl_gameData(object):
 
     
 
-game_info= nfl_gameData()
+game_info= NFLGameData()
 week = game_info.get_past_plays('rams')
 for i in week['plays']:
     print(week['plays'][i]['quarter'])
