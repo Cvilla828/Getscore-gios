@@ -182,10 +182,10 @@ class NFLGameData(object):
 
     
 
-game_info= NFLGameData()
-week = game_info.get_past_plays('rams')
-for i in week['plays']:
-    print(week['plays'][i]['quarter'])
+#game_info= NFLGameData()
+#week = game_info.get_past_plays('rams')
+#for i in week['plays']:
+#    print(week['plays'][i]['quarter'])
 
 # file=open('test.json', 'w')
 # file.write(json.dumps(week, sort_keys=True, indent=4))
