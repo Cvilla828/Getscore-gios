@@ -32,7 +32,7 @@ def parse_bot_commands(slack_events):
         If its not found, then this function returns None, None.
     """
     for event in slack_events:
-        if event["type"] == "message" and not "subtype" in event:
+        if event["type"] == "message" and "subtype" not in event:
             user_id, message = parse_direct_mention(event["text"])
             if user_id == starterbot_id:
                 return message, event["channel"]
@@ -77,7 +77,11 @@ def handle_command(command, channel):
             post = NFLScoresPost(nfl.get_game_score(), 'league')
     elif command == "getroster":
         if parameter is not None:
-            post = RosterPost(parse_roster(YFS.get_team_roster(parameter).json()), parameter)
+            roster_json = YFS.get_team_roster(parameter)
+            if roster_json is not None:
+                post = RosterPost(parse_roster(roster_json.json()), parameter)
+            else:
+                post = EchoPost("Sorry, I couldn't find a team for %s" % parameter)
     elif command == "getrespect":
         post = EchoPost("F", team)
     elif command == "getpastnflplays":
