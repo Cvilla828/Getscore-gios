@@ -60,9 +60,8 @@ def handle_command(command, channel):
         parameter = command.split(' ', 1)[1]
         command = command.split(' ', 1)[0]
     
-    if parameter not in YFS.team_id.keys():
+    if parameter not in YFS.team_id:
         team = parameter
-        parameter = None
     
     commands = ["getscore", "getstandings", "getnflscores", "getroster", "getrespect", "getpastnflplays"]
 
