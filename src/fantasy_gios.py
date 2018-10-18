@@ -1,6 +1,7 @@
 import json
 import webbrowser
 from rauth import OAuth2Service
+from yahoo_parser import parse_scores
 import os
 import time
 
@@ -65,8 +66,8 @@ class FantasyGios(object):
         
        # r = self.session.get(url, params={'format': 'json'})
         #dict for teams
-        self.team_id = {}
-        self.get_team_id()
+        self.team_id = self.get_team_id()
+        self.nicknames = self.get_nicknames()
         #print(r.status_code)
     
     # checks to see if token is expired
@@ -129,15 +130,31 @@ class FantasyGios(object):
         s = self.session.get(self.baseURI + '/teams', params={'format': 'json'})
         temp = s.json()
         size = s.json()['fantasy_content']['leagues']['0']['league'][1]['teams']['count']
-        for i in range(0,size):
-            self.team_id[temp['fantasy_content']['leagues']['0']['league'][1]['teams'][str(i)]['team'][0][2]['name']] = temp['fantasy_content']['leagues']['0']['league'][1]['teams'][str(i)]['team'][0][0]['team_key']
+        team_id = {}
+        for i in range(0, size):
+            team_id[temp['fantasy_content']['leagues']['0']['league'][1]['teams'][str(i)]['team'][0][2]['name'].lower()] = temp['fantasy_content']['leagues']['0']['league'][1]['teams'][str(i)]['team'][0][0]['team_key']
         # print(self.team_id)
+        return team_id
         
     # def get_team_roster(self, name):
     #     s = self.session.get('https://fantasysports.yahooapis.com/fantasy/v2/' + 'teams;team_keys='+ self.team_id[name]  + '/players', params={'format': 'json'})
     #     return s
 
+    def get_nicknames(self):
+        response = self.get_score()
+        matches = parse_scores(response.json())
+        nicknames = {}
+
+        for match in matches:
+            nicknames[match['manager_team_1'].lower()] = match['name_team_1'].lower()
+            nicknames[match['manager_team_2'].lower()] = match['name_team_2'].lower()
+        return nicknames
+
     def get_team_roster(self, name):
-        url = 'https://fantasysports.yahooapis.com/fantasy/v2/team/%s/roster' % self.team_id[name]
+        if name in self.nicknames and name not in self.team_id:
+            name = self.nicknames[name.lower()]
+        if self.team_id.get(name.lower(), '') == '':
+            return None
+        url = 'https://fantasysports.yahooapis.com/fantasy/v2/team/%s/roster' % self.team_id[name.lower()]
         s = self.session.get(url=url, params={'format': 'json'})
         return s
