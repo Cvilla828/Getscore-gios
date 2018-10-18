@@ -6,7 +6,6 @@ import xml.etree.ElementTree as ET
 
 class NFLGameData(object):
     def __init__(self):
-        self.week_info = {}
         self.week_info = self.get_game_week_info()
         self.scores = self.get_game_score()
 
@@ -14,8 +13,7 @@ class NFLGameData(object):
     def get_game_week_info():
         url = "http://www.nfl.com/liveupdate/scorestrip/ss.json"
         info = urllib.request.urlopen(url)
-        infos = json.load(info)["gms"]
-        return infos
+        return json.load(info)["gms"]
 
     @staticmethod
     def get_game_score():
@@ -25,31 +23,32 @@ class NFLGameData(object):
         scores = xmltodict.parse(data)['ss']['gms']['g']
         week_scores = [
                         {
-                                'home_t':score['@hnn'],
-                                'away_t':score['@vnn'],
-                                'home_s':score['@hs'],
+                                'home_t': score['@hnn'],
+                                'away_t': score['@vnn'],
+                                'home_s': score['@hs'],
                                 'away_s': score['@vs'],
-                                'h_state':score['@h'],
-                                'a_state':score['@v'],
-                                'quarter':score['@q'],
-                                'time':score['@t'],
-                                'day':score['@d'],
+                                'h_state': score['@h'],
+                                'a_state': score['@v'],
+                                'quarter': score['@q'],
+                                'time': score['@t'],
+                                'day': score['@d'],
                                 'redzone': score['@rz'],
-                                'poss':(score['@p'] if '@p' in score.keys() else ''),
-                                'time_left':(score['@k'] if '@k' in score.keys() else ''),
-                                'winner':''
+                                'poss': (score['@p'] if '@p' in score.keys() else ''),
+                                'time_left': (score['@k'] if '@k' in score.keys() else ''),
+                                'winner': ''
                         } for score in scores
                      ]
         for size in week_scores:
-            if (size ['quarter'] == 'F'or size['quarter'] == 'FO') and (int(size['home_s'], 10) > int(size['away_s'], 10)):
+            if(size['quarter'] == 'F'or size['quarter'] == 'FO') and (int(size['home_s'], 10) > int(size['away_s'], 10)):
                 size['winner'] = size['home_t']
             elif (size['quarter'] == 'F'or size['quarter'] == 'FO') and (int(size['home_s'], 10) < int(size['away_s'], 10)):
                 size['winner'] = size['away_t']
-            elif(size['quarter'] == 'F'or size['quarter'] == 'FO'):
+            elif size['quarter'] == 'F'or size['quarter'] == 'FO':
                 size['winner'] = 'tie'
         return week_scores
-    
-    def get_game_score_by_team(self, team_name):
+
+    @staticmethod
+    def get_game_score_by_team(team_name):
         url = "http://www.nfl.com/liveupdate/scorestrip/ss.xml"
         info = urllib.request.urlopen(url)
         data = info.read()
@@ -57,21 +56,21 @@ class NFLGameData(object):
 
         for score in scores:
             if team_name.lower() == score['@vnn'].lower() or team_name.lower() == score['@hnn'].lower():
-                team_scores =[
+                team_scores = [
                     {
-                        'home_t':score['@hnn'],
-                        'away_t':score['@vnn'],
-                        'home_s':score['@hs'],
+                        'home_t': score['@hnn'],
+                        'away_t': score['@vnn'],
+                        'home_s': score['@hs'],
                         'away_s': score['@vs'],
-                        'h_state':score['@h'],
-                        'a_state':score['@v'],
-                        'quarter':score['@q'],
-                        'time':score['@t'],
-                        'day':score['@d'],
+                        'h_state': score['@h'],
+                        'a_state': score['@v'],
+                        'quarter': score['@q'],
+                        'time': score['@t'],
+                        'day': score['@d'],
                         'redzone': score['@rz'],
-                        'poss':(score['@p'] if '@p' in score.keys() else ''),
-                        'time_left':(score['@k'] if '@k' in score.keys() else ''),
-                        'winner':''
+                        'poss': (score['@p'] if '@p' in score.keys() else ''),
+                        'time_left': (score['@k'] if '@k' in score.keys() else ''),
+                        'winner': ''
                         }
                      ]
         for team_score in team_scores:
@@ -79,7 +78,7 @@ class NFLGameData(object):
                 team_score['winner'] = team_score['home_t']
             elif (team_score['quarter'] == 'F'or team_score['quarter'] == 'FO') and (int(team_score['home_s'], 10) < int(team_score['away_s'], 10)):
                 team_score['winner'] = team_score['away_t']
-            elif(team_score['quarter'] == 'F'or team_score['quarter'] == 'FO'):
+            elif team_score['quarter'] == 'F'or team_score['quarter'] == 'FO':
                 team_score['winner'] = 'tie'
         return team_scores
 
@@ -97,17 +96,15 @@ class NFLGameData(object):
             info = urllib.request.urlopen(url)
             away_info = json.load(info)[eid]["away"]
         except urllib.error.HTTPError:
-            #print("Cannot Load %s, game not found" % (url))
+            # print("Cannot Load %s, game not found" % (url))
             pass
         return game_play_info, home_info, away_info
-    #print(json.dumps(game_play_info, indent=4, sort_keys=True))
+    # print(json.dumps(game_play_info, indent=4, sort_keys=True))
 
     def get_live_plays(self):
-        eid = None
         plays = {}
         all_plays = {}
-        
-        current_play = None
+
         for game in self.week_info:
             eid = game['eid']
             game_info, home_info, away_info = self.get_game_info(str(eid))
@@ -123,7 +120,7 @@ class NFLGameData(object):
 #                                'printed':'no'
 #                        }for j in game_info[i]["plays"]
 #                        ]
-            if(game_info is not None):
+            if game_info is not None:
                 info = {}
                 info['home_t'] = home_info['abbr']
                 info['away_t'] = away_info['abbr']
@@ -131,8 +128,6 @@ class NFLGameData(object):
                     if i == "crntdrv":
                         break
                     for j in game_info[i]["plays"]:
-                        
-                        
                         string = game_info[i]["plays"][str(j)]["desc"]
                         if string.find("TOUCHDOWN") != -1:
                             past_plays = {}
@@ -140,11 +135,11 @@ class NFLGameData(object):
                             past_plays['quarter'] = game_info[i]["plays"][str(j)]['qtr']
                             past_plays['poss'] = game_info[i]["plays"][str(j)]['posteam']
                     
-                            #print(string + '\n')
+                            # print(string + '\n')
                             plays[str(j)] = past_plays
                 info['plays'] = plays
                 all_plays[str(eid)] = info
-            #plays[eid] = current_play
+            # plays[eid] = current_play
         return all_plays
 
     def get_past_plays(self, team_name):
@@ -156,7 +151,6 @@ class NFLGameData(object):
         if eid is None:
             return -1
         game_info, home_info, away_info = self.get_game_info(str(eid))
-        p = 0
         plays = {}
 #        past_plays = {}
         info = {}
@@ -174,7 +168,7 @@ class NFLGameData(object):
                     past_plays['quarter'] = game_info[i]["plays"][str(j)]['qtr']
                     past_plays['poss'] = game_info[i]["plays"][str(j)]['posteam']
                     
-                    #print(string + '\n')
+                    # print(string + '\n')
                     plays[str(j)] = past_plays
             info['plays'] = plays
         return info
