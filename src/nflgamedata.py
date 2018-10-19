@@ -129,12 +129,17 @@ class NFLGameData(object):
                         break
                     for j in game_info[i]["plays"]:
                         string = game_info[i]["plays"][str(j)]["desc"]
+                        past_plays = {}
                         if string.find("TOUCHDOWN") != -1:
-                            past_plays = {}
                             past_plays['desc'] = string
                             past_plays['quarter'] = game_info[i]["plays"][str(j)]['qtr']
                             past_plays['poss'] = game_info[i]["plays"][str(j)]['posteam']
-                    
+                            past_plays['play'] = "TOUCHDOWN"
+                        elif string.find("TOUCHDOWN") == -1 and string.find("INTERCEPT") != -1:
+                            past_plays['desc'] = string
+                            past_plays['quarter'] = game_info[i]["plays"][str(j)]['qtr']
+                            past_plays['poss'] = game_info[i]["plays"][str(j)]['posteam']
+                            past_plays['play'] = "INTERCEPTION"
                             # print(string + '\n')
                             plays[str(j)] = past_plays
                 info['plays'] = plays
@@ -162,11 +167,17 @@ class NFLGameData(object):
             for j in game_info[i]["plays"]:
                 
                 string = game_info[i]["plays"][str(j)]["desc"]
+                past_plays ={}
                 if string.find("TOUCHDOWN") != -1:
-                    past_plays = {}
                     past_plays['desc'] = string
                     past_plays['quarter'] = game_info[i]["plays"][str(j)]['qtr']
                     past_plays['poss'] = game_info[i]["plays"][str(j)]['posteam']
+                    past_plays['play'] = "TOUCHDOWN"
+                elif string.find("TOUCHDOWN") == -1 and string.find("INTERCEPT") != -1:
+                    past_plays['desc'] = string
+                    past_plays['quarter'] = game_info[i]["plays"][str(j)]['qtr']
+                    past_plays['poss'] = game_info[i]["plays"][str(j)]['posteam']
+                    past_plays['play'] = "INTERCEPTION"
                     
                     # print(string + '\n')
                     plays[str(j)] = past_plays

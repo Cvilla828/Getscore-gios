@@ -370,6 +370,8 @@ class NFLPlaysPost(SlackPost):
 #            att.add_field('', value, True)
             value = nfl_plays['plays'][play]['poss']
             att.add_field('', value, True)
+            value = nfl_plays['plays'][play]['play']
+            att.add_field('', value, True)
             qtr = "QTR: %s -" % (nfl_plays['plays'][play]['quarter'])
             value = qtr + nfl_plays['plays'][play]['desc']
             att.set_footer(text=value)
