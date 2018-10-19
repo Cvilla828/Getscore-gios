@@ -58,7 +58,7 @@ class FantasyGios(object):
         
         self.session = self.service.get_auth_session(data=data, decoder=json.loads)
         
-        # Getting the refresh_toekn so when the token expires it renews it self.
+        # Getting the refresh_token so when the token expires it renews itself.
         self.credentials['access_token'] = self.service.access_token_response.json()['access_token']
         self.credentials['xoauth_yahoo_guid'] = self.service.access_token_response.json()['xoauth_yahoo_guid']
         self.credentials['refresh_token'] = self.service.access_token_response.json()['refresh_token']
