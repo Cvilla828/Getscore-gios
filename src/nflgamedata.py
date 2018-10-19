@@ -8,6 +8,41 @@ class NFLGameData(object):
     def __init__(self):
         self.week_info = self.get_game_week_info()
         self.scores = self.get_game_score()
+        self.teams = {
+            "KC": "chiefs",
+            "NE": "patriots",
+            "LA": "rams",
+            "DEN": "broncos",
+            "JAX": "jaguars",
+            "DAL": "cowboys",
+            "BAL": "ravens",
+            "TEN": "titans",
+            "TB": "buccaneers",
+            "ATL": "falcons",
+            "PIT": "steelers",
+            "CIN": "bengals",
+            "LAC": "chargers",
+            "CLE": "browns",
+            "ARI": "cardinals",
+            "CHI": "bears",
+            "BUF": "bills",
+            "IND": "colts",
+            "HOU": "texans",
+            "DET": "lions",
+            "MIA": "dolphins",
+            "MIN": "vikings",
+            "NYJ": "jets",
+            "CAR": "panthers",
+            "PHI": "eagles",
+            "NO": "saints",
+            "WAS": "redskins",
+            "SF": "49ers",
+            "NYG": "giants",
+            "ATL": "falcons",
+            "GB:": "packers",
+            "OAK": "raiders",
+            "SEA": "seahawks"
+        }
 
     @staticmethod
     def get_game_week_info():
@@ -135,6 +170,7 @@ class NFLGameData(object):
                             past_plays['quarter'] = game_info[i]["plays"][str(j)]['qtr']
                             past_plays['poss'] = game_info[i]["plays"][str(j)]['posteam']
                             past_plays['play'] = "TOUCHDOWN"
+                            past_plays['poss_alias'] = self.teams.get(past_plays['poss'], "")
 
                             # print(string + '\n')
                             plays[str(j)] = past_plays
@@ -169,6 +205,7 @@ class NFLGameData(object):
                     past_plays['quarter'] = game_info[i]["plays"][str(j)]['qtr']
                     past_plays['poss'] = game_info[i]["plays"][str(j)]['posteam']
                     past_plays['play'] = "TOUCHDOWN"
+                    past_plays['poss_alias'] = self.teams.get(past_plays['poss'], "")
                     # print(string + '\n')
                     plays[str(j)] = past_plays
             info['plays'] = plays

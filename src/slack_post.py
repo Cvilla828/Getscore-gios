@@ -368,7 +368,7 @@ class NFLPlaysPost(SlackPost):
             att = SlackPostAttachment()
 #            value = "QTR: %s" % (nfl_plays['plays'][play]['quarter'])
 #            att.add_field('', value, True)
-            value = nfl_plays['plays'][play]['poss']
+            value = nfl_plays['plays'][play]['poss_alias']
             att.add_field('', value, True)
             value = nfl_plays['plays'][play]['play']
             att.add_field('', value, True)
