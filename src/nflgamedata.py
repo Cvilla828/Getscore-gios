@@ -122,6 +122,7 @@ class NFLGameData(object):
 #                        ]
             if game_info is not None:
                 info = {}
+                past_plays = {}
                 info['home_t'] = home_info['abbr']
                 info['away_t'] = away_info['abbr']
                 for i in game_info:
@@ -129,7 +130,7 @@ class NFLGameData(object):
                         break
                     for j in game_info[i]["plays"]:
                         string = game_info[i]["plays"][str(j)]["desc"]
-                        past_plays = {}
+
                         if string.find("TOUCHDOWN") != -1:
                             past_plays['desc'] = string
                             past_plays['quarter'] = game_info[i]["plays"][str(j)]['qtr']
@@ -157,7 +158,7 @@ class NFLGameData(object):
             return -1
         game_info, home_info, away_info = self.get_game_info(str(eid))
         plays = {}
-#        past_plays = {}
+        past_plays = {}
         info = {}
         info['home_t'] = home_info['abbr']
         info['away_t'] = away_info['abbr']
@@ -167,7 +168,7 @@ class NFLGameData(object):
             for j in game_info[i]["plays"]:
                 
                 string = game_info[i]["plays"][str(j)]["desc"]
-                past_plays ={}
+#                past_plays ={}
                 if string.find("TOUCHDOWN") != -1:
                     past_plays['desc'] = string
                     past_plays['quarter'] = game_info[i]["plays"][str(j)]['qtr']
