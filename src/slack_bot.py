@@ -111,7 +111,11 @@ if __name__ == "__main__":
         while True:
             if YFS.token_is_expired():
                 YFS.renew_token()
-            command, channel = parse_bot_commands(slack_client.rtm_read())
+            try:
+                command, channel = parse_bot_commands(slack_client.rtm_read())
+            except:
+                slack_client.rtm_connect(with_team_state=False)
+                starterbot_id = slack_client.api_call("auth.test")["user_id"]
             if command:
                 handle_command(command, channel)
             time.sleep(RTM_READ_DELAY)
