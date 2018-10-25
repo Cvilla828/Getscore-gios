@@ -151,7 +151,7 @@ class FantasyGios(object):
         return nicknames
 
     def get_team_roster(self, name):
-        if name in self.nicknames and name not in self.team_id:
+        if name.lower() in self.nicknames and name.lower() not in self.team_id:
             name = self.nicknames[name.lower()]
         if self.team_id.get(name.lower(), '') == '':
             return None
