@@ -8,6 +8,7 @@ from yahoo_parser import *
 from slack_post import *
 import json
 from nflgamedata import *
+from utility import *
 
 # instantiate Slack client
 slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
@@ -71,7 +72,7 @@ def handle_command(command, channel):
         post = StandingsPost(parse_standings(YFS.get_standings().json()))
     elif command == "getnflscores":
         if team is not None:
-            post = NFLScoresPost(nfl.get_game_score_by_team(team), 'team')
+            post = NFLScoresPost(nfl.get_game_score_by_team(emoji_parser(team)), 'team')
         else:
             post = NFLScoresPost(nfl.get_game_score(), 'league')
     elif command == "getroster":
@@ -85,7 +86,7 @@ def handle_command(command, channel):
         post = EchoPost("F", team)
     elif command == "getpastnflplays":
         if team is not None:
-            post = NFLPlaysPost(nfl.get_past_plays(team), 'team')
+            post = NFLPlaysPost(nfl.get_past_plays(emoji_parser(team)), 'team')
         else:
             post = NFLPlaysPost(nfl.get_live_plays(), 'league')
    
