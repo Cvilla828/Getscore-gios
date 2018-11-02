@@ -39,7 +39,7 @@ class NFLGameData(object):
             "SF": "49ers",
             "NYG": "giants",
             "ATL": "falcons",
-            "GB:": "packers",
+            "GB": "packers",
             "OAK": "raiders",
             "SEA": "seahawks"
         }
