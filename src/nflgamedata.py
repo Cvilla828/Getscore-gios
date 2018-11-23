@@ -199,7 +199,7 @@ class NFLGameData(object):
             for j in game_info[i]["plays"]:
                 
                 string = game_info[i]["plays"][str(j)]["desc"]
-                if string.find("TOUCHDOWN") != -1 and string.find("NULL") == -1:
+                if string.upper().find("TOUCHDOWN") != -1 and string.upper().find("NULL") == -1:
                     past_plays = {}
                     past_plays['desc'] = string
                     past_plays['quarter'] = game_info[i]["plays"][str(j)]['qtr']
@@ -209,7 +209,7 @@ class NFLGameData(object):
                     # print(string + '\n')
                     plays[str(j)] = past_plays
                 #New line
-                elif string.find("INTERCEPT") != -1:
+                elif string.upper().find("INTERCEPT") != -1:
                     past_plays = {}
                     past_plays['desc'] = string
                     past_plays['quarter'] = game_info[i]["plays"][str(j)]['qtr']
@@ -218,7 +218,7 @@ class NFLGameData(object):
                     past_plays['poss_alias'] = self.teams.get(past_plays['poss'], "")
                     # print(string + '\n')
                     plays[str(j)] = past_plays
-                elif string.find("FIELD GOAL") != -1 and string.find("NULL") == -1:
+                elif string.upper().find("FIELD GOAL") != -1 and string.upper().find("NULL") == -1:
                     past_plays = {}
                     past_plays['desc'] = string
                     past_plays['quarter'] = game_info[i]["plays"][str(j)]['qtr']
