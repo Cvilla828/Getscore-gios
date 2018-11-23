@@ -174,6 +174,26 @@ class NFLGameData(object):
 
                             # print(string + '\n')
                             plays[str(j)] = past_plays
+
+                        # New line
+                        elif string.upper().find("INTERCEPT") != -1:
+                            past_plays = {}
+                            past_plays['desc'] = string
+                            past_plays['quarter'] = game_info[i]["plays"][str(j)]['qtr']
+                            past_plays['poss'] = game_info[i]["plays"][str(j)]['posteam']
+                            past_plays['play'] = "INTERCEPTION"
+                            past_plays['poss_alias'] = self.teams.get(past_plays['poss'], "")
+                            # print(string + '\n')
+                            plays[str(j)] = past_plays
+                        elif string.upper().find("FIELD GOAL") != -1 and string.upper().find("NULL") == -1:
+                            past_plays = {}
+                            past_plays['desc'] = string
+                            past_plays['quarter'] = game_info[i]["plays"][str(j)]['qtr']
+                            past_plays['poss'] = game_info[i]["plays"][str(j)]['posteam']
+                            past_plays['play'] = "FIELD GOAL"
+                            past_plays['poss_alias'] = self.teams.get(past_plays['poss'], "")
+                            # print(string + '\n')
+                            plays[str(j)] = past_plays
                 info['plays'] = plays
                 all_plays[str(eid)] = info
             # plays[eid] = current_play
