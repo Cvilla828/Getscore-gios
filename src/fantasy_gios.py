@@ -35,7 +35,7 @@ class FantasyGios(object):
             access_token_url='https://api.login.yahoo.com/oauth2/get_token',
             authorize_url='https://api.login.yahoo.com/oauth2/request_auth',
             base_url='http://fantasysports.yahooapis.com/')
-        self.baseURI = "https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=nfl.l.159366"
+        self.baseURI = "https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=nfl.l.145857"
 
         # the return URL is used to validate the request
 
