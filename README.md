@@ -3,10 +3,12 @@ Slack Bot for Yahoo Fantasy Football; Team GIOS FF
 
 ## Commands
    - `@getscore getscore`: returns the scores for all match ups in league for current week
-   - `@getscore getpredictions`: returns the predicted scores for all match ups in league for current week
    - `@getscore getnflscores`: returns all nfl teams' match-ups, scores, and status
-   - `@getscore getnflscores teamname`: returns specified nfl team's match-ups, scores, and status
-   
+   - `@getscore getnflscores [team name]`: returns specified nfl team's match-ups, scores, and status
+   - `@getscore getstandings`: returns the standings for the league
+   - `@getscore getrost [fantasy team name]`: returns the roster with play status for each player of requested team
+   - `@getscore getpastnflplays`: returns the recent scoring plays
+   - `@getscore getpastnflplays [team name]`: returns this weeks scoring plays for that team's game
 
 ## Dependenies
   - rauth
@@ -23,7 +25,6 @@ Slack Bot for Yahoo Fantasy Football; Team GIOS FF
 ## Planned Development
   - Alerts for major plays / score lead changes
   - NFL red zone integration
-  - get roster for specified team
   - Update documentation / docstrings 
   
 ## The Dream Team
@@ -31,4 +32,4 @@ Slack Bot for Yahoo Fantasy Football; Team GIOS FF
   - Hope
   - Schuyler
   - David
-  - Tho (kinda)
+  - Tho (debatable)
