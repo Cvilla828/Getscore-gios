@@ -139,7 +139,7 @@ class NFLGameData(object):
     def get_live_plays(self):
         plays = {}
         all_plays = {}
-
+        self.week_info = self.get_game_week_info()
         for game in self.week_info:
             eid = game['eid']
             game_info, home_info, away_info = self.get_game_info(str(eid))
@@ -201,6 +201,7 @@ class NFLGameData(object):
 
     def get_past_plays(self, team_name):
         eid = None
+        self.week_info = self.get_game_week_info()
         for game in self.week_info:
             if team_name.lower() == game['vnn'].lower() or team_name.lower() == game['hnn'].lower():
                 eid = game['eid']
